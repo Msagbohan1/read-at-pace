@@ -1,0 +1,2481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Read at Your Pace</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Lexend:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mint-50:#E3F7EE;--mint-200:#A8E6CB;--mint-500:#2FB886;--mint-700:#12805C;--mint-900:#0B5A41;
+    --sky-50:#E6F3FE;--sky-200:#B3DAFA;--sky-500:#3E9AE6;--sky-700:#1B6BB5;--sky-900:#0F4A80;
+    --sun-50:#FFF5D9;--sun-200:#FFDF8A;--sun-500:#F4B52E;--sun-700:#9A6500;--sun-900:#6B4500;
+    --coral-50:#FFEAE3;--coral-200:#FFC2B0;--coral-500:#F27A5B;--coral-700:#B5462A;--coral-900:#7E2C17;
+    --lav-50:#F0EDFF;--lav-200:#CFC7FB;--lav-500:#8C7BEA;--lav-700:#5645BD;--lav-900:#3A2E8C;
+    --ink:#1E2733;--ink-2:#5A6676;--line:#E3E7ED;--soft:#F6F8FA;
+    --shadow-sm:0 1px 2px rgba(30,39,51,.06),0 2px 6px rgba(30,39,51,.06);
+    --shadow-md:0 2px 4px rgba(30,39,51,.06),0 10px 22px rgba(30,39,51,.10);
+    --display:'Fredoka','Nunito',sans-serif;
+    --bg1:#ffffff;--bg2:var(--soft);--bg3:#ffffff;
+    --t1:var(--ink);--t2:var(--ink-2);--t3:#8B95A3;
+    --b1:#AEB7C2;--b2:#CBD2DB;--b3:var(--line);
+    --teal50:var(--mint-50);--teal100:var(--mint-200);--teal400:var(--mint-500);--teal600:var(--mint-700);--teal800:var(--mint-900);
+    --purple50:var(--lav-50);--purple100:#E0DAFD;--purple200:var(--lav-200);--purple800:var(--lav-900);
+    --amber50:var(--sun-50);--amber100:var(--sun-200);--amber600:var(--sun-700);--amber800:var(--sun-900);
+    --blue50:var(--sky-50);--blue100:var(--sky-200);--blue600:var(--sky-700);--blue800:var(--sky-900);
+    --coral50:var(--coral-50);--coral100:var(--coral-200);--coral600:var(--coral-700);
+    --gray50:#F1F3F6;--gray100:#D5DAE1;
+    --radius-md:12px;--radius-lg:16px;--radius-xl:22px;
+  }
+    *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Nunito',sans-serif;background:var(--bg3);min-height:100vh;padding:1rem;}
+  #app{max-width:760px;margin:0 auto;background:var(--bg3);}
+  .view{display:none;}.view.active{display:block;}
+  /* NAV */
+  .nav{display:flex;gap:6px;margin-bottom:1.25rem;}
+  .nav-btn{flex:1;padding:10px 6px;border-radius:var(--radius-md);border:0.5px solid var(--b2);background:var(--bg2);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--t2);cursor:pointer;transition:all .2s;text-align:center;}
+  .nav-btn.active{background:var(--teal50);border-color:var(--teal100);color:var(--teal800);}
+  .nav-btn.teacher-btn.active{background:var(--purple50);border-color:var(--purple200);color:var(--purple800);}
+  /* CARDS */
+  .card{background:var(--bg1);border-radius:var(--radius-xl);border:0.5px solid var(--b3);padding:1.4rem;}
+  /* LESSON GRID */
+  .lesson-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:1.25rem;}
+  .lesson-card{border-radius:var(--radius-lg);border:0.5px solid var(--b3);background:var(--bg1);padding:1.1rem 1rem;cursor:pointer;transition:all .2s;text-align:center;}
+  .lesson-card:hover{border-color:var(--teal100);background:var(--teal50);}
+  .lesson-card.done{border-color:var(--teal100);}
+  .lc-word{font-size:26px;font-weight:800;color:var(--t1);font-family:'Lexend',sans-serif;margin-bottom:4px;}
+  .lc-theme{font-size:11px;font-weight:700;color:var(--t2);}
+  .lc-check{width:14px;height:14px;border-radius:50%;background:var(--teal100);margin:6px auto 0;display:none;}
+  .lesson-card.done .lc-check{display:block;}
+  /* STEP DOTS */
+  .step-header{display:flex;align-items:center;gap:10px;margin-bottom:1.1rem;}
+  .step-dots{display:flex;gap:5px;}
+  .step-dot{width:8px;height:8px;border-radius:50%;background:var(--bg2);border:0.5px solid var(--b2);transition:background .3s;}
+  .step-dot.done{background:var(--teal100);}
+  .step-dot.active{background:var(--teal400);}
+  .step-label{font-size:12px;font-weight:700;color:var(--t2);margin-left:auto;}
+  /* CALM */
+  .calm-card{text-align:center;padding:2rem 1.5rem;}
+  .calm-title{font-size:22px;font-weight:800;color:var(--t1);margin-bottom:.5rem;font-family:'Lexend',sans-serif;}
+  .calm-sub{font-size:15px;color:var(--t2);margin-bottom:1.5rem;line-height:1.6;}
+  .breath-ring{width:70px;height:70px;border-radius:50%;border:3px solid var(--teal100);margin:0 auto 1.25rem;display:flex;align-items:center;justify-content:center;transition:transform 3s ease-in-out,border-color .5s;}
+  .breath-ring.inhale{transform:scale(1.4);border-color:var(--teal400);}
+  .breath-ring.exhale{transform:scale(.75);border-color:var(--teal600);}
+  .breath-dot{width:20px;height:20px;border-radius:50%;background:var(--teal50);border:2px solid var(--teal100);}
+  /* SOUND LISTEN */
+  .sound-letters{display:flex;gap:10px;justify-content:center;margin-bottom:1.25rem;flex-wrap:wrap;}
+  .sound-letter{width:72px;height:72px;border-radius:var(--radius-lg);border:0.5px solid var(--b3);background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:800;font-family:'Lexend',sans-serif;color:var(--t1);cursor:pointer;transition:all .2s;text-align:center;flex-direction:column;}
+  .sound-letter:hover{border-color:var(--teal100);background:var(--teal50);}
+  .sound-letter.playing{background:var(--teal50);border-color:var(--teal400);color:var(--teal800);transform:scale(1.08);}
+  .sound-label{font-size:11px;font-weight:700;color:var(--t2);margin-top:3px;}
+  /* BUILD */
+  .build-slots{display:flex;gap:10px;justify-content:center;margin-bottom:1.25rem;flex-wrap:wrap;}
+  .build-slot{width:72px;height:72px;border-radius:var(--radius-lg);border:2px dashed var(--b2);background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:800;font-family:'Lexend',sans-serif;color:var(--t1);transition:all .2s;}
+  .build-slot.filled{border:2px solid var(--teal100);background:var(--teal50);color:var(--teal800);}
+  .build-tiles{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .build-tile{width:72px;height:72px;border-radius:var(--radius-lg);border:0.5px solid var(--teal100);background:var(--bg1);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:800;font-family:'Lexend',sans-serif;color:var(--teal800);cursor:pointer;transition:all .2s;user-select:none;}
+  .build-tile:hover{background:var(--teal50);transform:scale(1.05);}
+  .build-tile.used{opacity:.25;pointer-events:none;}
+  /* READ */
+  .read-stage{text-align:center;}
+  .read-word{font-size:52px;font-weight:800;font-family:'Lexend',sans-serif;color:var(--t1);margin-bottom:.5rem;}
+  .read-phonemes{display:flex;gap:8px;justify-content:center;margin-bottom:1.25rem;flex-wrap:wrap;}
+  .phoneme-pill{padding:4px 12px;border-radius:20px;background:var(--bg2);border:0.5px solid var(--b3);font-size:14px;font-weight:700;color:var(--t2);}
+  .phoneme-pill.heard{background:var(--teal50);border-color:var(--teal100);color:var(--teal800);}
+  .phoneme-pill.model{background:var(--purple50);border-color:var(--purple200);color:var(--purple800);}
+  .mode-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+  .mode-btn{padding:11px 18px;border-radius:var(--radius-md);border:0.5px solid var(--b2);background:var(--bg2);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--t1);cursor:pointer;transition:all .15s;}
+  .mode-btn:hover{background:var(--teal50);border-color:var(--teal100);color:var(--teal800);}
+  .mode-btn.primary{background:var(--teal50);border-color:var(--teal400);color:var(--teal800);}
+  .mode-btn.mic-active{background:var(--amber50);border-color:var(--amber100);color:var(--amber800);}
+  .listen-status{font-size:13px;font-weight:700;color:var(--t2);margin-top:.75rem;min-height:20px;}
+  /* MATCH */
+  .match-prompt{font-size:16px;font-weight:700;color:var(--t2);text-align:center;margin-bottom:1rem;}
+  .match-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .match-card{border-radius:var(--radius-lg);border:0.5px solid var(--b3);background:var(--bg2);padding:1.1rem .5rem;text-align:center;cursor:pointer;transition:all .2s;}
+  .match-card:hover{border-color:var(--teal100);background:var(--teal50);}
+  .match-card.correct{border-color:var(--teal400);background:var(--teal50);}
+  .match-emoji{font-size:36px;margin-bottom:6px;}
+  .match-label{font-size:13px;font-weight:700;color:var(--t2);}
+  /* ENCOURAGEMENT */
+  .enc-card{text-align:center;padding:2.5rem 1.5rem;}
+  .enc-icon{font-size:48px;margin-bottom:.75rem;}
+  .enc-title{font-size:22px;font-weight:800;color:var(--teal800);font-family:'Lexend',sans-serif;margin-bottom:.5rem;}
+  .enc-msgs{font-size:15px;color:var(--t2);line-height:1.7;}
+  .stars-earned{display:inline-block;padding:7px 18px;border-radius:var(--radius-md);background:var(--amber50);border:0.5px solid var(--amber100);font-size:14px;font-weight:800;color:var(--amber800);margin-top:.75rem;}
+  /* FEEDBACK */
+  .feedback{border-radius:var(--radius-md);padding:.7rem 1rem;margin-bottom:.75rem;font-size:13px;font-weight:700;display:none;}
+  .feedback.show{display:block;}
+  .feedback.good{background:var(--teal50);color:var(--teal800);}
+  .feedback.gentle{background:var(--amber50);color:var(--amber800);}
+  .feedback.neutral{background:var(--bg2);color:var(--t2);}
+  /* BUTTONS */
+  .bottom-ctrl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:1rem;}
+  .btn-next{padding:12px 28px;border-radius:var(--radius-md);background:var(--teal50);border:0.5px solid var(--teal400);font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;color:var(--teal800);cursor:pointer;transition:all .15s;}
+  .btn-next:hover{background:var(--teal100);}
+  .btn-back{padding:12px 18px;border-radius:var(--radius-md);border:0.5px solid var(--b2);background:var(--bg2);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--t2);cursor:pointer;transition:all .15s;}
+  .breath-toggle{padding:8px 14px;border-radius:var(--radius-md);border:0.5px solid var(--b2);background:var(--bg1);font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--t2);cursor:pointer;}
+  .font-ctrl{display:flex;gap:4px;}
+  .font-btn{padding:6px 10px;border-radius:var(--radius-md);border:0.5px solid var(--b2);background:var(--bg2);font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;color:var(--t2);cursor:pointer;}
+  /* WORD CARDS */
+  .word-card{border-radius:var(--radius-lg);border:0.5px solid var(--b3);background:var(--bg1);padding:.9rem .6rem;text-align:center;cursor:pointer;transition:all .2s;font-family:'Lexend',sans-serif;font-size:18px;font-weight:600;color:var(--t1);position:relative;}
+  .word-card:hover{background:var(--purple50);color:var(--purple800);border-color:var(--purple200);}
+  .word-card.speaking{background:var(--amber50);color:var(--amber800);border-color:var(--amber100);}
+  /* TEACHER DASH */
+  .stat-box{border-radius:var(--radius-md);padding:12px 10px;background:var(--bg2);text-align:center;}
+  .stat-num{font-size:24px;font-weight:800;color:var(--t1);}
+  .stat-lbl{font-size:11px;font-weight:700;color:var(--t2);margin-top:2px;}
+  .sound-table{border-radius:var(--radius-lg);border:0.5px solid var(--b3);background:var(--bg1);overflow:hidden;margin-bottom:1.25rem;}
+  .st-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:0.5px solid var(--b3);}
+  .st-row:last-child{border-bottom:none;}
+  .st-bar-wrap{flex:1;height:8px;background:var(--bg2);border-radius:4px;overflow:hidden;}
+  .st-bar{height:100%;border-radius:4px;background:var(--teal100);transition:width .5s;}
+  .settings-card{border-radius:var(--radius-lg);border:0.5px solid var(--b3);background:var(--bg1);padding:1rem 1.1rem;margin-bottom:1rem;}
+  .settings-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:0.5px solid var(--b3);}
+  .settings-row:last-child{border-bottom:none;}
+  .toggle{width:40px;height:22px;border-radius:11px;background:var(--bg2);border:0.5px solid var(--b2);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
+  .toggle.on{background:var(--teal100);border-color:var(--teal400);}
+  .toggle-knob{width:18px;height:18px;border-radius:50%;background:var(--bg1);position:absolute;top:1px;left:1px;transition:left .2s;border:0.5px solid var(--b2);}
+  .toggle.on .toggle-knob{left:19px;}
+  /* MISC */
+  .section-label{font-size:13px;font-weight:700;color:var(--t2);margin-bottom:.5rem;}
+  .tip-strip{font-size:13px;font-weight:700;padding:.65rem .9rem;border-radius:var(--radius-md);background:var(--purple50);color:var(--purple800);margin-bottom:.9rem;}
+  .stars-badge{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;background:var(--amber50);border:0.5px solid var(--amber100);}
+  .custom-story{border-radius:var(--radius-lg);border:0.5px solid var(--b3);background:var(--bg1);padding:1rem;margin-top:.75rem;display:none;}
+  .custom-story.open{display:block;}
+  .custom-story input,.custom-story textarea{width:100%;background:var(--bg2);border:0.5px solid var(--b2);border-radius:var(--radius-md);padding:8px 10px;font-family:'Nunito',sans-serif;font-size:14px;color:var(--t1);margin-bottom:8px;}
+  .custom-story textarea{height:80px;resize:vertical;}
+  .add-btn{padding:9px 16px;border-radius:var(--radius-md);background:var(--purple50);border:0.5px solid var(--purple200);color:var(--purple800);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px;}
+  .cat-btn{padding:6px 13px;border-radius:20px;border:0.5px solid var(--b3);background:var(--bg2);font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--t2);cursor:pointer;transition:all .15s;}
+  .cat-btn.active{background:var(--teal50);border-color:var(--teal100);color:var(--teal800);}
+  /* STORIES */
+  .story-title{font-size:20px;font-weight:800;font-family:'Lexend',sans-serif;color:var(--t1);margin-bottom:.75rem;text-align:center;}
+  .story-text{font-family:'Lexend',sans-serif;font-weight:500;line-height:2;color:var(--t1);margin-bottom:1rem;}
+  .sw{padding:1px 3px;border-radius:5px;cursor:pointer;transition:background .2s,color .2s;}
+  .sw.heard{background:var(--teal50);color:var(--teal800);}
+  .sent.speaking .sw{background:var(--purple50);color:var(--purple800);}
+  .congrats-banner{display:none;text-align:center;padding:1rem;border-radius:var(--radius-lg);background:var(--teal50);border:0.5px solid var(--teal100);margin-bottom:1rem;}
+  .cb-title{font-size:22px;font-weight:800;font-family:'Lexend',sans-serif;color:var(--teal800);}
+  .cb-sub{font-size:14px;font-weight:700;color:var(--teal600);margin-top:2px;}
+  #confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:50;display:none;}
+  /* QUESTIONS */
+  .quiz-count{font-size:12px;font-weight:700;color:var(--t2);text-align:center;margin-bottom:.4rem;}
+  .quiz-q{font-size:20px;font-weight:600;font-family:'Lexend',sans-serif;color:var(--t1);text-align:center;margin-bottom:.75rem;line-height:1.4;}
+  .hear-btn{display:block;margin:0 auto 1rem;padding:7px 14px;border-radius:20px;border:0.5px solid var(--b2);background:var(--bg2);font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--t2);cursor:pointer;}
+  .quiz-opts{display:grid;gap:10px;}
+  .quiz-opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px 16px;border-radius:var(--radius-lg);border:0.5px solid var(--b3);background:var(--bg2);font-family:'Nunito',sans-serif;font-size:16px;font-weight:700;color:var(--t1);cursor:pointer;transition:all .2s;}
+  .quiz-opt:hover{border-color:var(--teal100);background:var(--teal50);}
+  .quiz-opt.correct{border-color:var(--teal400);background:var(--teal50);color:var(--teal800);}
+  .quiz-opt.tried{opacity:.45;pointer-events:none;}
+  .quiz-emoji{font-size:28px;line-height:1;}
+  /* STORY PICTURES */
+  .story-pics{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:.4rem;}
+  .story-pic{width:88px;padding:10px 6px 8px;border-radius:var(--radius-lg);border:0.5px solid var(--b3);background:var(--bg2);cursor:pointer;font-family:'Nunito',sans-serif;transition:background .2s,border-color .2s;}
+  .story-pic:hover{border-color:var(--purple200);background:var(--purple50);}
+  .story-pic.found{border-color:var(--teal400);background:var(--teal50);}
+  .pic-emoji{display:block;font-size:40px;line-height:1.15;}
+  .pic-label{display:block;font-size:13px;font-weight:800;color:var(--t2);margin-top:4px;}
+  .story-pic.found .pic-label{color:var(--teal800);}
+  .pics-hint{font-size:12px;font-weight:700;color:var(--t2);text-align:center;margin-bottom:.9rem;}
+  @keyframes picpop{0%{transform:scale(1);}40%{transform:scale(1.3) rotate(-8deg);}70%{transform:scale(.94) rotate(5deg);}100%{transform:scale(1);}}
+  @media (prefers-reduced-motion:no-preference){.story-pic.pop .pic-emoji{animation:picpop .6s ease;}}
+  .sw.spot{background:var(--amber50);color:var(--amber800);box-shadow:0 0 0 2px var(--amber100);}
+  .review-link{display:none;margin:.7rem auto 0;padding:8px 14px;border-radius:20px;border:0.5px solid var(--amber100);background:var(--amber50);color:var(--amber800);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+  /* REVIEW */
+  .nav-badge{display:none;margin-left:4px;padding:1px 7px;border-radius:10px;background:var(--amber50);border:0.5px solid var(--amber100);color:var(--amber800);font-size:11px;font-weight:800;}
+  .review-panel{text-align:center;margin-bottom:.9rem;}
+  .review-from{font-size:12px;font-weight:700;color:var(--t2);margin-bottom:.3rem;}
+  .review-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:9px;}
+  .word-card.selected{background:var(--purple50);border-color:var(--purple200);color:var(--purple800);}
+  .review-empty{text-align:center;padding:2rem 1rem;font-size:15px;font-weight:700;color:var(--t2);line-height:1.6;}
+  @media (max-width:480px){
+    .nav-btn{font-size:12px;padding:8px 2px;}
+    .nav-ico{display:block;}
+    .story-pic{width:calc(25% - 8px);padding:8px 2px 6px;}
+    .pic-emoji{font-size:32px;}
+    .pic-label{font-size:11px;overflow-wrap:anywhere;}
+  }
+  /* STORY SCENE */
+  .scene{position:sticky;top:8px;z-index:5;height:200px;border-radius:var(--radius-lg);overflow:hidden;border:0.5px solid var(--b3);margin-bottom:.45rem;background:linear-gradient(to bottom,var(--sky,#E6F1FB) 0 60%,var(--ground,#EAF3DE) 60% 100%);}
+  .scene-decor{position:absolute;transform:translate(-50%,-50%);font-size:20px;opacity:.55;pointer-events:none;line-height:1;}
+  .scene-item{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:none;padding:0;cursor:default;font-family:'Nunito',sans-serif;}
+  .scene-item.shown{cursor:pointer;}
+  .scene-dot{position:absolute;top:50%;left:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2px dashed rgba(0,0,0,.25);background:rgba(255,255,255,.5);transition:opacity .3s;}
+  .scene-item.shown .scene-dot{opacity:0;}
+  .scene-item .pic-emoji{font-size:44px;line-height:1.1;opacity:0;transform:scale(.2);transition:opacity .45s,transform .55s cubic-bezier(.3,1.6,.5,1);}
+  .scene-item .pic-label{margin-top:0;padding:1px 8px;border-radius:10px;background:#fff;border:0.5px solid var(--b3);font-size:12px;font-weight:800;color:var(--t2);white-space:nowrap;opacity:0;transition:opacity .45s;}
+  .scene-item.shown .pic-emoji{opacity:1;transform:scale(1);}
+  .scene-item.shown .pic-label{opacity:1;}
+  .scene-item.found .pic-label{background:var(--teal50);border-color:var(--teal100);color:var(--teal800);}
+  @media (prefers-reduced-motion:no-preference){.scene-item.pop .pic-emoji{animation:picpop .6s ease;}}
+  @media (max-width:480px){
+    .scene{height:180px;}
+    .scene-item .pic-emoji{font-size:34px;}
+    .scene-item .pic-label{font-size:10px;padding:1px 5px;}
+  }
+
+  /* ═══ REDESIGN: shared pieces ═══ */
+  body{color:var(--ink);padding:1.1rem 1rem 3rem;-webkit-tap-highlight-color:transparent;}
+  #app{max-width:820px;}
+  button{font-family:inherit;}
+  :focus-visible{outline:3px solid var(--sky-500);outline-offset:2px;}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+  .tone-mint{--tone-50:var(--mint-50);--tone-200:var(--mint-200);--tone-500:var(--mint-500);--tone-700:var(--mint-700);--tone-900:var(--mint-900);}
+  .tone-sky{--tone-50:var(--sky-50);--tone-200:var(--sky-200);--tone-500:var(--sky-500);--tone-700:var(--sky-700);--tone-900:var(--sky-900);}
+  .tone-sun{--tone-50:var(--sun-50);--tone-200:var(--sun-200);--tone-500:var(--sun-500);--tone-700:var(--sun-700);--tone-900:var(--sun-900);}
+  .tone-coral{--tone-50:var(--coral-50);--tone-200:var(--coral-200);--tone-500:var(--coral-500);--tone-700:var(--coral-700);--tone-900:var(--coral-900);}
+  .tone-lav{--tone-50:var(--lav-50);--tone-200:var(--lav-200);--tone-500:var(--lav-500);--tone-700:var(--lav-700);--tone-900:var(--lav-900);}
+  .card{border:1px solid var(--line);box-shadow:var(--shadow-sm);}
+  .calm-title,.story-title,.cb-title,.enc-title{font-family:var(--display);font-weight:600;}
+
+  /* buttons: big, clear, and they press down when tapped */
+  .btn-next,.btn-back,.mode-btn{min-height:48px;border-radius:14px;transition:transform .12s,box-shadow .12s,background .15s,border-color .15s;}
+  .btn-next{background:var(--mint-700);border:none;color:#fff;font-size:16px;padding:12px 26px;box-shadow:0 3px 0 var(--mint-900);}
+  .btn-next:hover{background:#0F7353;}
+  .btn-next:active{transform:translateY(2px);box-shadow:0 1px 0 var(--mint-900);}
+  .btn-back{background:#fff;border:1.5px solid var(--b2);color:var(--ink-2);box-shadow:0 3px 0 var(--line);}
+  .btn-back:hover{background:var(--soft);color:var(--ink);}
+  .btn-back:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line);}
+  .mode-btn{background:#fff;border:1.5px solid var(--b2);font-size:14px;font-weight:800;padding:11px 18px;}
+  .mode-btn:hover{background:var(--mint-50);border-color:var(--mint-500);color:var(--mint-900);}
+  .mode-btn:active{transform:scale(.97);}
+  .mode-btn.primary{background:var(--mint-50);border-color:var(--mint-500);color:var(--mint-900);}
+  .mode-btn.mic-active{background:var(--sun-50);border-color:var(--sun-500);color:var(--sun-900);}
+  .breath-toggle{min-height:40px;border:1.5px solid var(--b2);border-radius:12px;}
+
+  /* ═══ STAGE 1: header ═══ */
+  .topbar{display:flex;align-items:center;gap:10px;margin-bottom:1rem;}
+  .brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
+  .brand-mark{width:42px;height:42px;border-radius:14px;background:var(--mint-500);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 3px 0 var(--mint-700);}
+  .brand-ico{width:24px;height:24px;}
+  .brand-name{font-family:var(--display);font-weight:600;font-size:23px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .stars-badge{gap:6px;padding:7px 14px 7px 10px;border-radius:999px;background:var(--sun-50);border:1.5px solid var(--sun-200);font-weight:800;color:var(--sun-900);}
+  .star-ico{width:20px;height:20px;fill:var(--sun-500);stroke:var(--sun-700);stroke-width:1.2;stroke-linejoin:round;}
+  #starBadge{font-size:16px;font-weight:800;color:var(--sun-900);}
+  .stars-word{font-size:13px;font-weight:700;color:var(--sun-700);}
+  .font-ctrl{display:flex;gap:0;border:1.5px solid var(--b2);border-radius:12px;overflow:hidden;background:#fff;}
+  .font-btn{min-width:42px;min-height:38px;padding:0 10px;border:none;border-radius:0;background:#fff;font-size:14px;color:var(--ink-2);}
+  .font-btn+.font-btn{border-left:1.5px solid var(--b2);}
+  .font-btn:hover{background:var(--soft);color:var(--ink);}
+
+  /* ═══ STAGE 1: navigation ═══ */
+  .nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:1.4rem;}
+  .nav-btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;padding:8px 6px;border-radius:16px;border:1.5px solid var(--line);background:#fff;font-size:15px;font-weight:800;color:var(--ink-2);box-shadow:var(--shadow-sm);transition:transform .12s,box-shadow .12s,background .15s,border-color .15s,color .15s;}
+  .nav-btn .ico{width:22px;height:22px;flex-shrink:0;}
+  .nav-btn:hover{transform:translateY(-1px);color:var(--ink);}
+  .nav-btn:active{transform:translateY(1px);}
+  .nav-btn.active,.nav-btn.teacher-btn.active{box-shadow:none;}
+  .nav-lessons.active{background:var(--mint-50);border-color:var(--mint-500);color:var(--mint-900);}
+  .nav-words.active{background:var(--sky-50);border-color:var(--sky-500);color:var(--sky-900);}
+  .nav-review.active{background:var(--sun-50);border-color:var(--sun-500);color:var(--sun-900);}
+  .nav-teacher.active,.nav-btn.teacher-btn.active{background:var(--lav-50);border-color:var(--lav-500);color:var(--lav-900);}
+  .nav-badge{margin-left:0;padding:1px 8px;border-radius:999px;background:var(--sun-200);border:none;color:var(--sun-900);font-size:12px;}
+
+  /* ═══ STAGE 1: grade picker + progress ═══ */
+  .section-head{display:flex;align-items:baseline;gap:10px;margin:0 0 .7rem;}
+  .section-title{font-family:var(--display);font-weight:600;font-size:20px;color:var(--ink);}
+  .section-count{font-size:13px;font-weight:800;color:var(--ink-2);background:var(--soft);border-radius:999px;padding:2px 10px;}
+  .grade-row{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-bottom:1rem;}
+  .grade-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:4px 0;border:none;background:none;cursor:pointer;border-radius:16px;}
+  .grade-dot{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--tone-50);border:2px solid var(--tone-200);color:var(--tone-900);font-family:var(--display);font-weight:600;font-size:21px;transition:transform .15s,background .15s,box-shadow .15s;}
+  .grade-name{font-size:12px;font-weight:800;color:var(--ink-2);}
+  .grade-btn:hover .grade-dot{transform:translateY(-2px);box-shadow:var(--shadow-sm);}
+  .grade-btn:active .grade-dot{transform:scale(.94);}
+  .grade-btn.active .grade-dot{background:var(--tone-700);border-color:var(--tone-700);color:#fff;box-shadow:0 0 0 4px var(--tone-50),0 3px 0 var(--tone-900);}
+  .grade-btn.active .grade-name{color:var(--ink);}
+  .home-progress{border-radius:20px;background:var(--tone-50);padding:14px 18px 15px;margin-bottom:1.5rem;}
+  .hp-top{display:flex;align-items:baseline;gap:10px;margin-bottom:9px;}
+  .hp-title{font-family:var(--display);font-weight:600;font-size:18px;color:var(--tone-900);flex:1;}
+  .hp-count{font-size:14px;font-weight:800;color:var(--tone-900);}
+  .hp-bar{height:12px;border-radius:999px;background:#fff;overflow:hidden;}
+  .hp-fill{height:100%;width:0;border-radius:999px;background:var(--tone-500);transition:width .5s ease;}
+  .hp-msg{font-size:13px;font-weight:700;color:var(--tone-900);margin-top:8px;}
+
+  /* ═══ STAGE 2: lesson and story cards ═══ */
+  .lesson-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:1.6rem;}
+  .story-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
+  .lesson-card{position:relative;display:flex;flex-direction:column;align-items:center;gap:7px;width:100%;padding:14px 10px 13px;border-radius:18px;border:1.5px solid var(--line);background:#fff;box-shadow:var(--shadow-sm);color:var(--ink);text-align:center;transition:transform .15s,box-shadow .15s,border-color .15s;}
+  .lesson-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:var(--tone-200);background:#fff;}
+  .lesson-card:active{transform:scale(.97);box-shadow:var(--shadow-sm);}
+  .lc-pic{width:58px;height:58px;border-radius:17px;background:var(--tone-50);display:flex;align-items:center;justify-content:center;font-size:31px;line-height:1;color:var(--tone-700);}
+  .lc-pic svg{width:30px;height:30px;}
+  .lc-word{font-family:'Lexend',sans-serif;font-weight:600;font-size:23px;line-height:1.2;color:var(--ink);margin:0;}
+  .lc-word[data-story]{font-size:16px;line-height:1.25;}
+  .lc-theme{font-size:11.5px;font-weight:800;color:var(--tone-900);background:var(--tone-50);border-radius:999px;padding:3px 10px;}
+  .lc-check{display:none;position:absolute;top:8px;right:8px;width:24px;height:24px;margin:0;border-radius:50%;background:var(--mint-500);color:#fff;align-items:center;justify-content:center;box-shadow:0 0 0 3px #fff;}
+  .lc-check svg{width:14px;height:14px;}
+  .lesson-card.done{border-color:var(--mint-200);background:#FAFEFC;}
+  .lesson-card.done .lc-check{display:flex;}
+
+  .toggle.on{background:var(--mint-500);border-color:var(--mint-700);}
+  @media (max-width:480px){
+    .brand-mark{width:36px;height:36px;border-radius:12px;}
+    .brand-name{font-size:17px;line-height:1.1;white-space:normal;}
+    .topbar{gap:8px;}
+    .stars-word{display:none;}
+    .stars-badge{padding:6px 11px 6px 8px;}
+    .font-btn{min-width:36px;padding:0 6px;}
+    .nav{gap:6px;}
+    .nav-btn{flex-direction:column;gap:3px;min-height:58px;font-size:12px;padding:6px 2px;position:relative;}
+    .nav-badge{position:absolute;top:4px;right:6px;}
+    .grade-row{gap:2px;}
+    .grade-dot{width:42px;height:42px;font-size:18px;}
+    .grade-name{font-size:11px;}
+    .section-title{font-size:18px;}
+    .lesson-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:9px;}
+    .story-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .lc-pic{width:50px;height:50px;font-size:27px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .nav-btn,.grade-dot,.lesson-card,.btn-next,.btn-back,.mode-btn,.hp-fill{transition:none;}
+    .nav-btn:hover,.grade-btn:hover .grade-dot,.lesson-card:hover{transform:none;}
+  }
+
+  /* ═══ STAGE 3: scenes that move ═══ */
+  .scene-item .fx{display:inline-block;}
+  @keyframes fxDash{0%,100%{transform:translate(0,0);}15%{transform:translate(calc(var(--dir,1)*28px),-12px);}30%{transform:translate(calc(var(--dir,1)*56px),0);}45%{transform:translate(calc(var(--dir,1)*84px),-10px);}55%{transform:translate(calc(var(--dir,1)*96px),0);}70%{transform:translate(calc(var(--dir,1)*60px),-10px);}85%{transform:translate(calc(var(--dir,1)*26px),0);}}
+  @keyframes fxHop{0%,100%{transform:translateY(0);}25%{transform:translateY(-22px);}50%{transform:translateY(0);}70%{transform:translateY(-11px);}}
+  @keyframes fxFloat{0%,100%{transform:translateY(0) rotate(0);}50%{transform:translateY(-8px) rotate(5deg);}}
+  @keyframes fxFlutter{0%,100%{transform:translate(0,0);}25%{transform:translate(10px,-8px) rotate(8deg);}50%{transform:translate(0,-13px);}75%{transform:translate(-10px,-6px) rotate(-8deg);}}
+  @keyframes fxSway{0%,100%{transform:rotate(0);}25%{transform:rotate(7deg);}75%{transform:rotate(-7deg);}}
+  @keyframes fxShine{0%,100%{transform:scale(1) rotate(0);}50%{transform:scale(1.18) rotate(18deg);}}
+  @keyframes fxTwinkle{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.45;transform:scale(.8);}}
+  @keyframes fxGrow{0%{transform:scale(.25);}70%{transform:scale(1.18);}100%{transform:scale(1);}}
+  @keyframes fxShake{0%,100%{transform:rotate(0);}20%{transform:rotate(-12deg);}40%{transform:rotate(11deg);}60%{transform:rotate(-8deg);}80%{transform:rotate(6deg);}}
+  @keyframes fxPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
+  @keyframes fxShoot{0%{transform:translate(-70px,-34px);opacity:0;}30%{opacity:1;}100%{transform:translate(0,0);opacity:1;}}
+  .fx-dash{animation:fxDash 1.7s ease-in-out 1;}
+  .fx-hop{animation:fxHop .9s ease-out 1;}
+  .fx-float{animation:fxFloat 3s ease-in-out 3;}
+  .fx-flutter{animation:fxFlutter 2.4s ease-in-out 3;}
+  .fx-sway{animation:fxSway 2.6s ease-in-out 3;}
+  .fx-shine{animation:fxShine 2.4s ease-in-out 3;}
+  .fx-twinkle{animation:fxTwinkle 1.2s ease-in-out 4;}
+  .fx-grow{animation:fxGrow 1.1s ease-out 1;transform-origin:50% 100%;}
+  .fx-shake{animation:fxShake .7s ease-in-out 1;}
+  .fx-pulse{animation:fxPulse .9s ease-in-out 2;}
+  .fx-shoot{animation:fxShoot 1.2s ease-out 1;}
+  @keyframes fxP{0%{transform:translate(0,0);opacity:.95;}100%{transform:translate(var(--dx,0),var(--dy,-40px));opacity:0;}}
+  .fx-p{position:absolute;pointer-events:none;z-index:2;animation:fxP 1.5s ease-out both;}
+  .p-bubble{width:11px;height:11px;border-radius:50%;border:2px solid #7CC4F5;background:rgba(255,255,255,.7);}
+  .p-mud{width:9px;height:9px;border-radius:50%;background:#8B5A2B;}
+  .p-drop{width:4px;height:11px;border-radius:3px;background:#3E9AE6;}
+  .p-snow{width:7px;height:7px;border-radius:50%;background:#fff;border:1px solid #B3DAFA;}
+  .p-spark{width:6px;height:6px;border-radius:50%;background:#F4B52E;}
+  .p-z{font:700 15px var(--display);color:#5645BD;}
+  .motion-off .fx{animation:none!important;}
+  @media (prefers-reduced-motion:reduce){.scene-item .fx{animation:none!important;}.fx-p{display:none;}}
+  .scene-word{position:absolute;left:50%;top:12px;transform:translateX(-50%);padding:3px 20px 5px;border-radius:999px;background:#fff;box-shadow:var(--shadow-md);font-family:var(--display);font-weight:600;font-size:34px;line-height:1.2;color:var(--ink);opacity:0;transition:opacity .25s;pointer-events:none;z-index:3;white-space:nowrap;}
+  .scene-word.on{opacity:1;}
+  .scene-motion{position:absolute;right:8px;top:8px;z-index:4;width:36px;height:36px;border-radius:50%;border:1.5px solid var(--line);background:rgba(255,255,255,.92);color:var(--ink-2);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .scene-motion svg{width:16px;height:16px;}
+
+  /* ═══ STAGE 4: reading modes ═══ */
+  .read-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:.4rem;}
+  .read-mode{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:86px;padding:12px 6px 10px;border-radius:18px;border:1.5px solid var(--tone-200);background:var(--tone-50);color:var(--tone-900);cursor:pointer;box-shadow:0 3px 0 var(--tone-200);transition:transform .12s,box-shadow .12s,background .15s;}
+  .read-mode .ico{width:28px;height:28px;}
+  .read-mode .rm-t{font-size:15px;font-weight:800;}
+  .read-mode .rm-s{font-size:12px;font-weight:700;opacity:.8;}
+  .read-mode:hover{transform:translateY(-1px);}
+  .read-mode:active{transform:translateY(2px);box-shadow:0 1px 0 var(--tone-200);}
+  .read-mode.on{background:var(--tone-700);border-color:var(--tone-700);color:#fff;box-shadow:0 3px 0 var(--tone-900);}
+  .echo-bar{display:none;align-items:center;gap:8px;flex-wrap:wrap;margin-top:.8rem;padding:10px 12px;border-radius:14px;background:var(--sun-50);border:1.5px solid var(--sun-200);}
+  .echo-msg{flex:1;min-width:150px;font-size:14px;font-weight:800;color:var(--sun-900);}
+  .echo-bar .mode-btn{min-height:42px;padding:8px 14px;}
+  .sw.now{background:var(--sun-200);color:var(--sun-900);}
+  .sent.turn .sw{background:var(--sun-50);}
+  .sent-play{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;margin:0 6px 0 2px;vertical-align:middle;border-radius:50%;border:1.5px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer;}
+  .sent-play:hover{background:var(--sky-50);border-color:var(--sky-200);color:var(--sky-900);}
+  .sent-play svg{width:15px;height:15px;}
+  @media (max-width:480px){
+    .read-modes{gap:6px;}.read-mode{min-height:74px;padding:9px 2px 8px;}
+    .read-mode .rm-t{font-size:13px;}.read-mode .rm-s{display:none;}
+    .scene-word{font-size:26px;}
+  }
+
+  /* ═══ STAGE 5: activities ═══ */
+  .quiz-kind{display:table;margin:0 auto .5rem;padding:3px 12px;border-radius:999px;background:var(--lav-50);color:var(--lav-900);font-size:12px;font-weight:800;}
+  .quiz-q{font-family:var(--display);font-weight:600;}
+  .quiz-sentence{display:none;margin:0 auto .9rem;padding:12px 16px;border-radius:14px;background:var(--soft);font-family:'Lexend',sans-serif;font-size:20px;font-weight:500;text-align:center;line-height:1.5;}
+  .hear-btn{display:flex;align-items:center;gap:6px;min-height:40px;border:1.5px solid var(--b2);background:#fff;font-size:13px;}
+  .hear-btn svg{width:18px;height:18px;}
+  .quiz-opt{min-height:56px;border:1.5px solid var(--line);background:#fff;box-shadow:0 3px 0 var(--line);border-radius:16px;}
+  .quiz-opt:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line);}
+  .quiz-opt.correct{box-shadow:0 3px 0 var(--mint-200);}
+  .quiz-opts.pic-row{grid-template-columns:repeat(auto-fit,minmax(84px,1fr));}
+  .quiz-opts.pic-row .quiz-opt{justify-content:center;padding:14px 6px;}
+  .quiz-opts.pic-row .quiz-emoji{font-size:44px;}
+  .quiz-opts.on-scene{padding:16px 12px;border-radius:16px;background:linear-gradient(to bottom,var(--sky,#E6F1FB) 0 55%,var(--ground,#EAF3DE) 55% 100%);}
+  .build-pic{font-size:56px;line-height:1;text-align:center;margin-bottom:10px;}
+  .build-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;}
+  .b-slot,.b-tile{width:54px;height:58px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Lexend',sans-serif;font-size:28px;font-weight:600;}
+  .b-slot{border:2px dashed var(--b2);background:var(--soft);color:var(--ink);}
+  .b-slot.full{border-style:solid;border-color:var(--sky-200);background:var(--sky-50);color:var(--sky-900);}
+  .b-slot.ok{border-color:var(--mint-500);background:var(--mint-50);color:var(--mint-900);}
+  .b-tile{border:1.5px solid var(--sun-200);background:var(--sun-50);color:var(--sun-900);cursor:pointer;box-shadow:0 3px 0 var(--sun-200);transition:transform .12s,opacity .15s;}
+  .b-tile:active{transform:translateY(2px);}
+  .b-tile.used{opacity:.25;pointer-events:none;}
+  .build-undo{display:block;margin:0 auto;min-height:40px;}
+
+  /* ═══ STAGE 6: mascot, badges, rewards ═══ */
+  .pip svg{display:block;width:100%;height:auto;}
+  .home-progress{display:flex;align-items:center;gap:14px;}
+  .hp-pip{width:62px;flex-shrink:0;}
+  .hp-main{flex:1;min-width:0;}
+  .hp-msg{display:inline-block;margin-top:9px;padding:5px 12px;border-radius:4px 14px 14px 14px;background:#fff;}
+  button.stars-badge{cursor:pointer;font-family:inherit;transition:transform .12s;}
+  button.stars-badge:hover{transform:translateY(-1px);}
+  .enc-icon.pip{width:92px;margin:0 auto .6rem;font-size:0;}
+  .enc-badge{display:none;margin:.8rem auto 0;padding:8px 16px;border-radius:14px;background:var(--lav-50);color:var(--lav-900);font-size:14px;font-weight:800;}
+  .toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,140%);display:flex;align-items:center;gap:10px;max-width:calc(100% - 24px);padding:10px 18px 10px 10px;border-radius:999px;background:#fff;border:1.5px solid var(--line);box-shadow:var(--shadow-md);font-size:15px;font-weight:800;color:var(--ink);z-index:60;transition:transform .35s cubic-bezier(.3,1.4,.5,1);}
+  .toast.on{transform:translate(-50%,0);}
+  .toast-pip{width:40px;flex-shrink:0;}
+  .rewards-head{display:flex;align-items:center;gap:14px;margin-bottom:1rem;}
+  .rw-pip{width:74px;flex-shrink:0;}
+  .rw-sub{font-size:14px;font-weight:700;color:var(--ink-2);margin-top:2px;}
+  .rw-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1.4rem;}
+  .rw-stat{border-radius:16px;padding:12px 8px;text-align:center;background:var(--tone-50);color:var(--tone-900);}
+  .rw-num{font-family:var(--display);font-weight:600;font-size:28px;line-height:1.1;}
+  .rw-lbl{font-size:12px;font-weight:800;}
+  .badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:1.4rem;}
+  .badge{border-radius:18px;border:1.5px solid var(--line);background:#fff;padding:14px 10px 12px;text-align:center;box-shadow:var(--shadow-sm);}
+  .badge svg{width:58px;height:58px;display:block;margin:0 auto 6px;}
+  .badge-name{font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .badge-need{font-size:12px;font-weight:700;color:var(--ink-2);margin-top:2px;}
+  .badge.locked{background:var(--soft);box-shadow:none;}
+  .badge.locked svg{filter:grayscale(1);opacity:.4;}
+  .badge.locked .badge-name{color:var(--ink-2);}
+  .badge.earned{border-color:var(--tone-200);}
+  @media (max-width:480px){
+    .hp-pip{width:48px;}.b-slot,.b-tile{width:44px;height:50px;font-size:24px;}
+    .badge-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .quiz-sentence{font-size:17px;}
+  }
+  @media (prefers-reduced-motion:reduce){.toast{transition:none;}}
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<div class="toast" id="toast" role="status" aria-live="polite"><span class="pip toast-pip"></span><span id="toastText"></span></div>
+<div id="app">
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark"><svg class="brand-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5c-1.8-1.3-4.2-2-7-2v13c2.8 0 5.2.7 7 2 1.8-1.3 4.2-2 7-2v-13c-2.8 0-5.2.7-7 2z"/><path d="M12 6.5v13"/></svg></span>
+    <span class="brand-name">Read at your pace</span>
+  </div>
+  <button class="stars-badge" onclick="showNav('rewards')" aria-label="My rewards" title="My rewards"><svg class="star-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8L12 16.9 6.7 19.6l1-5.8L3.5 9.7l5.9-.9L12 3.5z"/></svg><span id="starBadge">0</span><span class="stars-word">stars</span></button>
+  <div class="font-ctrl" role="group" aria-label="Text size">
+    <button class="font-btn" onclick="adjFont(-1)" aria-label="Smaller text">A&minus;</button>
+    <button class="font-btn" onclick="adjFont(1)" aria-label="Bigger text">A+</button>
+  </div>
+</header>
+
+<nav class="nav" aria-label="Sections">
+  <button class="nav-btn nav-lessons active" data-nav="lessons" onclick="showNav('lessons',this)"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5c-1.8-1.3-4.2-2-7-2v13c2.8 0 5.2.7 7 2 1.8-1.3 4.2-2 7-2v-13c-2.8 0-5.2.7-7 2z"/><path d="M12 6.5v13"/></svg><span>Lessons</span></button>
+  <button class="nav-btn nav-words" data-nav="words" onclick="showNav('words',this)"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M8 10h8M8 13h5"/></svg><span>Words</span></button>
+  <button class="nav-btn nav-review" data-nav="review" onclick="showNav('review',this)"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 4v5h-5"/></svg><span>Review</span><span class="nav-badge" id="reviewBadge"></span></button>
+  <button class="nav-btn nav-teacher teacher-btn" data-nav="teacher" onclick="showNav('teacher',this)"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 9.5 12 5l9.5 4.5L12 14 2.5 9.5z"/><path d="M6.5 11.5V16c1.5 1.5 3.4 2.2 5.5 2.2s4-.7 5.5-2.2v-4.5"/><path d="M21.5 9.5V15"/></svg><span>Teacher</span></button>
+</nav>
+
+<!-- LESSONS -->
+<div id="view-lessons" class="view active">
+  <div id="screen-pick">
+    <div class="section-head"><h2 class="section-title">Choose your grade</h2></div>
+    <div class="grade-row" id="gradeTabs" role="group" aria-label="Grade"></div>
+    <div class="home-progress" id="homeProgress">
+      <div class="pip hp-pip" aria-hidden="true"></div>
+      <div class="hp-main">
+        <div class="hp-top"><span class="hp-title" id="hpTitle"></span><span class="hp-count" id="hpCount"></span></div>
+        <div class="hp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="hpBar"><div class="hp-fill" id="hpFill"></div></div>
+        <div class="hp-msg" id="hpMsg"></div>
+      </div>
+    </div>
+    <div class="section-head" id="lessonSectionLabel"><h2 class="section-title">Word lessons</h2><span class="section-count" id="lessonCount"></span></div>
+    <div class="lesson-grid" id="lessonGrid"></div>
+    <div class="section-head" id="storySectionLabel"><h2 class="section-title">Stories</h2><span class="section-count" id="storyCount"></span></div>
+    <div class="lesson-grid story-grid" id="storyGrid"></div>
+  </div>
+  <div id="screen-lesson" style="display:none;">
+    <div class="step-header">
+      <div class="step-dots" id="stepDots"></div>
+      <div class="step-label" id="stepLabel"></div>
+      <button class="breath-toggle" id="breathToggle" onclick="toggleBreath()">Breathing guide</button>
+    </div>
+    <!-- CALM -->
+    <div id="step-calm" class="step-screen">
+      <div class="card calm-card">
+        <div class="breath-ring" id="breathRing"><div class="breath-dot"></div></div>
+        <div class="calm-title" id="calmTitle"></div>
+        <div class="calm-sub">Take your time. There is no rush at all.<br>You can take a breath whenever you need.</div>
+      </div>
+      <div class="bottom-ctrl"><button class="btn-next" onclick="goStep(1)">I am ready</button></div>
+    </div>
+    <!-- LISTEN -->
+    <div id="step-listen" class="step-screen" style="display:none;">
+      <div class="card" style="margin-bottom:.9rem;">
+        <div style="font-size:13px;font-weight:700;color:var(--t2);text-align:center;margin-bottom:.9rem;">Listen to each sound — tap to hear it again</div>
+        <div class="sound-letters" id="soundLetters"></div>
+        <div style="font-size:12px;color:var(--t2);text-align:center;font-weight:600;">Tap any letter as many times as you like</div>
+      </div>
+      <div class="feedback" id="fb-listen"></div>
+      <div class="bottom-ctrl">
+        <button class="btn-back" onclick="goStep(0)">Back</button>
+        <button class="btn-next" onclick="goStep(2)">Next</button>
+      </div>
+    </div>
+    <!-- BUILD -->
+    <div id="step-build" class="step-screen" style="display:none;">
+      <div class="card" style="margin-bottom:.9rem;">
+        <div style="font-size:13px;font-weight:700;color:var(--t2);text-align:center;margin-bottom:.9rem;">Build the word — tap a letter to place it</div>
+        <div class="build-slots" id="buildSlots"></div>
+        <div class="build-tiles" id="buildTiles"></div>
+        <div class="feedback show neutral" id="fb-build" style="text-align:center;margin-top:.75rem;display:block;">Tap each letter to put it in place</div>
+      </div>
+      <div class="bottom-ctrl">
+        <button class="btn-back" onclick="goStep(1)">Back</button>
+        <button class="btn-back" onclick="resetBuild()" style="color:var(--purple800);border-color:var(--purple200);background:var(--purple50);">Reset</button>
+        <button class="btn-next" onclick="goStep(3)" id="buildNext" style="opacity:.4;pointer-events:none;">Next</button>
+      </div>
+    </div>
+    <!-- READ -->
+    <div id="step-read" class="step-screen" style="display:none;">
+      <div class="card read-stage" style="margin-bottom:.9rem;">
+        <div style="font-size:13px;font-weight:700;color:var(--t2);margin-bottom:.5rem;">The word is</div>
+        <div class="read-word" id="readWord"></div>
+        <div class="read-phonemes" id="readPhonemes"></div>
+        <div class="mode-btns">
+          <button class="mode-btn primary" onclick="readWithMe()">Listen with me</button>
+          <button class="mode-btn" onclick="tryMic()" id="micBtn">I will try</button>
+          <button class="mode-btn" onclick="goStep(4)">I will watch</button>
+        </div>
+        <div class="listen-status" id="listenStatus"></div>
+      </div>
+      <div class="feedback" id="fb-read"></div>
+      <div class="bottom-ctrl">
+        <button class="btn-back" onclick="goStep(2)">Back</button>
+        <button class="btn-next" onclick="goStep(4)">Next</button>
+      </div>
+    </div>
+    <!-- MATCH -->
+    <div id="step-match" class="step-screen" style="display:none;">
+      <div class="card" style="margin-bottom:.9rem;">
+        <div class="match-prompt" id="matchPrompt"></div>
+        <div class="match-grid" id="matchGrid"></div>
+      </div>
+      <div class="feedback" id="fb-match"></div>
+      <div class="bottom-ctrl">
+        <button class="btn-back" onclick="goStep(3)">Back</button>
+        <button class="btn-next" onclick="goStep(5)" id="matchNext" style="opacity:.4;pointer-events:none;">Next</button>
+      </div>
+    </div>
+    <!-- STORY -->
+    <div id="step-story" class="step-screen" style="display:none;">
+      <div class="card" style="margin-bottom:.9rem;">
+        <div class="story-title" id="storyTitle"></div>
+        <div class="scene" id="storyScene"></div>
+        <div class="pics-hint" id="picsHint">Watch the picture come to life as you read. Tap anything to hear its word.</div>
+        <div class="story-text" id="storyBody"></div>
+        <div class="congrats-banner" id="storyCongrats">
+          <div class="cb-title">🎉 Congratulations!</div>
+          <div class="cb-sub">You read the whole story. You should be proud.</div>
+        </div>
+        <div class="read-modes" role="group" aria-label="How do you want to read?">
+          <button class="read-mode tone-sky" onclick="storyListen()" id="storyListenBtn"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 13v-1a8 8 0 0 1 16 0v1"/><rect x="3" y="13" width="4.5" height="7" rx="2"/><rect x="16.5" y="13" width="4.5" height="7" rx="2"/></svg><span class="rm-t">Listen</span><span class="rm-s">Hear the story</span></button>
+          <button class="read-mode tone-lav" onclick="storyEcho()" id="storyEchoBtn"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h9a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H8l-3 2.5V12H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M18 10h2a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-1v2.5L16 18h-4a2 2 0 0 1-2-2v-.5"/></svg><span class="rm-t">Read with me</span><span class="rm-s">We take turns</span></button>
+          <button class="read-mode tone-mint" onclick="storyMic()" id="storyMicBtn"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"/><path d="M12 18v3"/></svg><span class="rm-t">I can read</span><span class="rm-s">Read out loud</span></button>
+        </div>
+        <div class="echo-bar" id="echoBar">
+          <span class="echo-msg" id="echoMsg" aria-live="polite"></span>
+          <button class="mode-btn" onclick="echoAgain()">Hear again</button>
+          <button class="mode-btn primary" onclick="echoNext()">Next sentence</button>
+        </div>
+        <div class="listen-status" id="storyStatus"></div>
+        <button class="review-link" id="storyReviewLink" onclick="showNav('review')"></button>
+      </div>
+      <div class="feedback" id="fb-story"></div>
+      <div class="bottom-ctrl">
+        <button class="btn-back" onclick="backToList()">Back to stories</button>
+        <button class="btn-next" onclick="goStep(2)">Next</button>
+      </div>
+    </div>
+    <!-- QUESTIONS -->
+    <div id="step-quiz" class="step-screen" style="display:none;">
+      <div class="card" style="margin-bottom:.9rem;">
+        <div class="quiz-count" id="quizCount"></div>
+        <div class="quiz-kind" id="quizKind"></div>
+        <div class="quiz-q" id="quizQ"></div>
+        <div class="quiz-sentence" id="quizSentence"></div>
+        <button class="hear-btn" onclick="hearQuestion()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3l4-3.5v12l-4-3.5H4z"/><path d="M15 9.5a3.5 3.5 0 0 1 0 5"/><path d="M17.5 7a7 7 0 0 1 0 10"/></svg>Hear it</button>
+        <div class="quiz-opts" id="quizOpts"></div>
+      </div>
+      <div class="feedback" id="fb-quiz"></div>
+      <div class="bottom-ctrl">
+        <button class="btn-back" onclick="goStep(1)">Back to the story</button>
+        <button class="btn-next" onclick="quizNext()" id="quizNext" style="opacity:.4;pointer-events:none;">Next</button>
+      </div>
+    </div>
+    <!-- DONE -->
+    <div id="step-done" class="step-screen" style="display:none;">
+      <div class="card enc-card">
+        <div class="enc-icon pip" aria-hidden="true"></div>
+        <div class="enc-title" id="encTitle">You did it!</div>
+        <div class="enc-msgs">You tried. You learned. You should be really proud.</div>
+        <div class="stars-earned" id="encStars">+2 stars earned</div>
+        <div class="enc-badge" id="encBadge"></div>
+      </div>
+      <div class="bottom-ctrl"><button class="btn-next" onclick="backToList()">Choose another lesson</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- WORDS -->
+<div id="view-words" class="view">
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.9rem;" id="wordCatTabs"></div>
+  <div class="tip-strip">Tap any word to hear it spoken slowly — then say it out loud</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:9px;" id="wordGrid"></div>
+</div>
+
+<!-- REVIEW -->
+<div id="view-review" class="view">
+  <div style="margin-bottom:1rem;">
+    <div style="font-size:18px;font-weight:800;color:var(--t1);">Words to practice</div>
+    <div style="font-size:13px;color:var(--t2);margin-top:2px;">Words from your stories that I did not hear yet. Tap a word to practice it.</div>
+  </div>
+  <div class="card review-panel" id="reviewPanel" style="display:none;">
+    <div class="review-from" id="reviewFrom"></div>
+    <div class="read-word" id="reviewWord"></div>
+    <div class="mode-btns">
+      <button class="mode-btn primary" onclick="reviewHear()">🔊 Hear it</button>
+      <button class="mode-btn" onclick="reviewMic()" id="reviewMicBtn">I will try</button>
+      <button class="mode-btn" onclick="reviewKnow()">I know this word</button>
+    </div>
+    <div class="listen-status" id="reviewStatus"></div>
+  </div>
+  <div class="feedback" id="fb-review"></div>
+  <div class="review-grid" id="reviewGrid"></div>
+  <div class="review-empty" id="reviewEmpty">No words to practice right now.<br>After you read a story, any words to practice will show up here.</div>
+</div>
+
+<!-- REWARDS -->
+<div id="view-rewards" class="view">
+  <div class="rewards-head"><div class="pip rw-pip" aria-hidden="true"></div><div><h2 class="section-title">My rewards</h2><div class="rw-sub" id="rwSub"></div></div></div>
+  <div class="rw-stats" id="rwStats"></div>
+  <div class="section-head"><h2 class="section-title">Badges</h2><span class="section-count" id="rwCount"></span></div>
+  <div class="badge-grid" id="badgeGrid"></div>
+  <div class="bottom-ctrl"><button class="btn-next" onclick="showNav('lessons')">Back to lessons</button></div>
+</div>
+
+<!-- TEACHER -->
+<div id="view-teacher" class="view">
+  <div style="margin-bottom:1.25rem;">
+    <div style="font-size:18px;font-weight:800;color:var(--t1);">Progress overview</div>
+    <div style="font-size:13px;color:var(--t2);margin-top:2px;">Growth only — no speed, no rankings</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem;">
+    <div class="stat-box"><div class="stat-num" id="dLessons">0</div><div class="stat-lbl">lessons done</div></div>
+    <div class="stat-box"><div class="stat-num" id="dWords">0</div><div class="stat-lbl">words practiced</div></div>
+    <div class="stat-box"><div class="stat-num" id="dStars">0</div><div class="stat-lbl">stars earned</div></div>
+  </div>
+  <div class="section-label">Sound exposure</div>
+  <div class="sound-table" id="soundTable"></div>
+  <div class="section-label">Preferred response mode</div>
+  <div style="display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap;" id="prefRow"></div>
+  <div class="section-label">Settings</div>
+  <div class="settings-card" id="settingsCard"></div>
+  <div class="section-label" style="margin-top:.75rem;">Add a custom lesson</div>
+  <button class="add-btn" onclick="toggleCustom()">+ Add custom word or story</button>
+  <div class="custom-story" id="customStory">
+    <div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:4px;">Word or story title</div>
+    <input type="text" id="customTitle" placeholder="e.g. dog">
+    <div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:4px;">Letters (comma separated) or paste a short story</div>
+    <textarea id="customText" placeholder="d, o, g  — or paste a short story here"></textarea>
+    <button class="add-btn" onclick="addCustomLesson()">Load lesson</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+const LESSONS=[
+  // CVC - Animals
+  {id:'cat',word:'cat',sounds:['c','a','t'],theme:'animals',emoji:'🐱',pics:[{e:'🐱',l:'cat',ok:true},{e:'🐶',l:'dog'},{e:'🐰',l:'rabbit'}]},
+  {id:'bug',word:'bug',sounds:['b','u','g'],theme:'animals',emoji:'🐛',pics:[{e:'🐛',l:'bug',ok:true},{e:'🐝',l:'bee'},{e:'🐌',l:'snail'}]},
+  {id:'hen',word:'hen',sounds:['h','e','n'],theme:'animals',emoji:'🐔',pics:[{e:'🐔',l:'hen',ok:true},{e:'🐄',l:'cow'},{e:'🐖',l:'pig'}]},
+  {id:'fox',word:'fox',sounds:['f','o','x'],theme:'animals',emoji:'🦊',pics:[{e:'🦊',l:'fox',ok:true},{e:'🐺',l:'wolf'},{e:'🐻',l:'bear'}]},
+  {id:'pig',word:'pig',sounds:['p','i','g'],theme:'animals',emoji:'🐷',pics:[{e:'🐷',l:'pig',ok:true},{e:'🐔',l:'hen'},{e:'🐄',l:'cow'}]},
+  {id:'rat',word:'rat',sounds:['r','a','t'],theme:'animals',emoji:'🐭',pics:[{e:'🐭',l:'rat',ok:true},{e:'🐱',l:'cat'},{e:'🐰',l:'rabbit'}]},
+  // CVC - Nature
+  {id:'sun',word:'sun',sounds:['s','u','n'],theme:'nature',emoji:'☀️',pics:[{e:'☀️',l:'sun',ok:true},{e:'🌙',l:'moon'},{e:'☁️',l:'cloud'}]},
+  {id:'log',word:'log',sounds:['l','o','g'],theme:'nature',emoji:'🪵',pics:[{e:'🪵',l:'log',ok:true},{e:'🌿',l:'leaf'},{e:'🌸',l:'flower'}]},
+  {id:'mud',word:'mud',sounds:['m','u','d'],theme:'nature',emoji:'💧',pics:[{e:'💧',l:'mud',ok:true},{e:'🌊',l:'wave'},{e:'❄️',l:'snow'}]},
+  {id:'den',word:'den',sounds:['d','e','n'],theme:'nature',emoji:'🏕️',pics:[{e:'🏕️',l:'den',ok:true},{e:'🌲',l:'tree'},{e:'🪨',l:'rock'}]},
+  // CVC - Objects
+  {id:'box',word:'box',sounds:['b','o','x'],theme:'objects',emoji:'📦',pics:[{e:'📦',l:'box',ok:true},{e:'⚽',l:'ball'},{e:'🚗',l:'car'}]},
+  {id:'hat',word:'hat',sounds:['h','a','t'],theme:'clothes',emoji:'🎩',pics:[{e:'🎩',l:'hat',ok:true},{e:'👟',l:'shoe'},{e:'🧤',l:'glove'}]},
+  {id:'cup',word:'cup',sounds:['c','u','p'],theme:'objects',emoji:'☕',pics:[{e:'☕',l:'cup',ok:true},{e:'🍽️',l:'plate'},{e:'🥄',l:'spoon'}]},
+  {id:'bed',word:'bed',sounds:['b','e','d'],theme:'objects',emoji:'🛏️',pics:[{e:'🛏️',l:'bed',ok:true},{e:'🛋️',l:'sofa'},{e:'🪑',l:'chair'}]},
+  {id:'pot',word:'pot',sounds:['p','o','t'],theme:'objects',emoji:'🍲',pics:[{e:'🍲',l:'pot',ok:true},{e:'🥘',l:'pan'},{e:'🫙',l:'jar'}]},
+  {id:'map',word:'map',sounds:['m','a','p'],theme:'school',emoji:'🗺️',pics:[{e:'🗺️',l:'map',ok:true},{e:'📏',l:'ruler'},{e:'✏️',l:'pencil'}]},
+  {id:'pen',word:'pen',sounds:['p','e','n'],theme:'school',emoji:'🖊️',pics:[{e:'🖊️',l:'pen',ok:true},{e:'✏️',l:'pencil'},{e:'📏',l:'ruler'}]},
+  {id:'bag',word:'bag',sounds:['b','a','g'],theme:'school',emoji:'🎒',pics:[{e:'🎒',l:'bag',ok:true},{e:'👜',l:'purse'},{e:'🧳',l:'case'}]},
+  // CVC - Food
+  {id:'ham',word:'ham',sounds:['h','a','m'],theme:'food',emoji:'🥩',pics:[{e:'🥩',l:'ham',ok:true},{e:'🍞',l:'bread'},{e:'🧀',l:'cheese'}]},
+  {id:'yam',word:'yam',sounds:['y','a','m'],theme:'food',emoji:'🍠',pics:[{e:'🍠',l:'yam',ok:true},{e:'🥕',l:'carrot'},{e:'🥔',l:'potato'}]},
+  {id:'fig',word:'fig',sounds:['f','i','g'],theme:'food',emoji:'🍇',pics:[{e:'🍇',l:'fig',ok:true},{e:'🍎',l:'apple'},{e:'🍊',l:'orange'}]},
+  // Sight words
+  {id:'the',word:'the',sounds:['t','h','e'],theme:'sight word',emoji:'👁️',pics:[{e:'📖',l:'the',ok:true},{e:'📝',l:'a'},{e:'📋',l:'an'}]},
+  {id:'and',word:'and',sounds:['a','n','d'],theme:'sight word',emoji:'👁️',pics:[{e:'📖',l:'and',ok:true},{e:'📝',l:'but'},{e:'📋',l:'or'}]},
+  {id:'was',word:'was',sounds:['w','a','s'],theme:'sight word',emoji:'👁️',pics:[{e:'📖',l:'was',ok:true},{e:'📝',l:'is'},{e:'📋',l:'are'}]},
+  {id:'are',word:'are',sounds:['a','r','e'],theme:'sight word',emoji:'👁️',pics:[{e:'📖',l:'are',ok:true},{e:'📝',l:'is'},{e:'📋',l:'was'}]},
+  {id:'you',word:'you',sounds:['y','o','u'],theme:'sight word',emoji:'👁️',pics:[{e:'🧒',l:'you',ok:true},{e:'👤',l:'me'},{e:'👥',l:'they'}]},
+  {id:'said',word:'said',sounds:['s','a','i','d'],theme:'sight word',emoji:'👁️',pics:[{e:'💬',l:'said',ok:true},{e:'👂',l:'heard'},{e:'📢',l:'called'}]},
+  {id:'have',word:'have',sounds:['h','a','v','e'],theme:'sight word',emoji:'👁️',pics:[{e:'🤲',l:'have',ok:true},{e:'🎁',l:'give'},{e:'🙈',l:'need'}]},
+  {id:'they',word:'they',sounds:['t','h','e','y'],theme:'sight word',emoji:'👁️',pics:[{e:'👥',l:'they',ok:true},{e:'🧒',l:'you'},{e:'👤',l:'me'}]},
+  // Longer words (4-5 letters)
+  {id:'frog',word:'frog',sounds:['f','r','o','g'],theme:'animals',emoji:'🐸',pics:[{e:'🐸',l:'frog',ok:true},{e:'🐢',l:'turtle'},{e:'🦎',l:'lizard'}]},
+  {id:'drum',word:'drum',sounds:['d','r','u','m'],theme:'music',emoji:'🥁',pics:[{e:'🥁',l:'drum',ok:true},{e:'🎸',l:'guitar'},{e:'🎹',l:'piano'}]},
+  {id:'flag',word:'flag',sounds:['f','l','a','g'],theme:'objects',emoji:'🚩',pics:[{e:'🚩',l:'flag',ok:true},{e:'🎈',l:'balloon'},{e:'🪁',l:'kite'}]},
+  {id:'grin',word:'grin',sounds:['g','r','i','n'],theme:'feelings',emoji:'😁',pics:[{e:'😁',l:'grin',ok:true},{e:'😢',l:'cry'},{e:'😮',l:'gasp'}]},
+  {id:'clap',word:'clap',sounds:['c','l','a','p'],theme:'actions',emoji:'👏',pics:[{e:'👏',l:'clap',ok:true},{e:'🤸',l:'jump'},{e:'🏃',l:'run'}]},
+  {id:'trip',word:'trip',sounds:['t','r','i','p'],theme:'actions',emoji:'🧳',pics:[{e:'🧳',l:'trip',ok:true},{e:'🏠',l:'home'},{e:'🏫',l:'school'}]},
+  {id:'flock',word:'flock',sounds:['f','l','o','c','k'],theme:'nature',emoji:'🐦',pics:[{e:'🐦',l:'flock',ok:true},{e:'🌊',l:'wave'},{e:'🌲',l:'tree'}]},
+  {id:'plant',word:'plant',sounds:['p','l','a','n','t'],theme:'nature',emoji:'🌱',pics:[{e:'🌱',l:'plant',ok:true},{e:'🪨',l:'rock'},{e:'💧',l:'water'}]},
+  {id:'smile',word:'smile',sounds:['s','m','i','l','e'],theme:'feelings',emoji:'😊',pics:[{e:'😊',l:'smile',ok:true},{e:'😢',l:'cry'},{e:'😠',l:'frown'}]},
+  {id:'bread',word:'bread',sounds:['b','r','e','a','d'],theme:'food',emoji:'🍞',pics:[{e:'🍞',l:'bread',ok:true},{e:'🧀',l:'cheese'},{e:'🥚',l:'egg'}]},
+  {id:'grape',word:'grape',sounds:['g','r','a','p','e'],theme:'food',emoji:'🍇',pics:[{e:'🍇',l:'grape',ok:true},{e:'🍎',l:'apple'},{e:'🍋',l:'lemon'}]},
+  {id:'storm',word:'storm',sounds:['s','t','o','r','m'],theme:'nature',emoji:'⛈️',pics:[{e:'⛈️',l:'storm',ok:true},{e:'☀️',l:'sun'},{e:'❄️',l:'snow'}]},
+  // Seasonal
+  {id:'snow',word:'snow',sounds:['s','n','o','w'],theme:'winter',emoji:'❄️',pics:[{e:'❄️',l:'snow',ok:true},{e:'🌧️',l:'rain'},{e:'☀️',l:'sun'}]},
+  {id:'gift',word:'gift',sounds:['g','i','f','t'],theme:'christmas',emoji:'🎁',pics:[{e:'🎁',l:'gift',ok:true},{e:'🎄',l:'tree'},{e:'🎅',l:'santa'}]},
+  {id:'bell',word:'bell',sounds:['b','e','l','l'],theme:'christmas',emoji:'🔔',pics:[{e:'🔔',l:'bell',ok:true},{e:'🕯️',l:'candle'},{e:'⭐',l:'star'}]},
+  {id:'leaf',word:'leaf',sounds:['l','e','a','f'],theme:'fall',emoji:'🍂',pics:[{e:'🍂',l:'leaf',ok:true},{e:'🍎',l:'apple'},{e:'🎃',l:'pumpkin'}]},
+  {id:'seed',word:'seed',sounds:['s','e','e','d'],theme:'spring',emoji:'🌱',pics:[{e:'🌱',l:'seed',ok:true},{e:'🌸',l:'flower'},{e:'🌧️',l:'rain'}]},
+  {id:'kite',word:'kite',sounds:['k','i','t','e'],theme:'spring',emoji:'🪁',pics:[{e:'🪁',l:'kite',ok:true},{e:'🌬️',l:'wind'},{e:'☀️',l:'sun'}]},
+];
+// In every question the FIRST answer is the right one. The app shuffles them on screen.
+const STORIES=[
+  // ── Pre-K ──
+  {id:"s_redball",grade:"prek",word:"The Red Ball",emoji:"🔴",text:"I see a ball. The ball is red. I kick the ball.",questions:[
+    {q:"What color is the ball?",a:[["Red","🔴"],["Blue","🔵"],["Green","🟢"]]},
+    {q:"What do I do with the ball?",a:[["Kick it","🦶"],["Eat it","🍽️"],["Wash it","🧼"]]}]},
+  {id:"s_mycat",grade:"prek",word:"My Cat",emoji:"🐱",text:"I have a cat. My cat is soft. My cat likes to nap.",questions:[
+    {q:"What pet do I have?",a:[["A cat","🐱"],["A dog","🐶"],["A fish","🐟"]]},
+    {q:"What does my cat like to do?",a:[["Nap","😴"],["Swim","🏊"],["Sing","🎤"]]}]},
+  {id:"s_bigsun",grade:"prek",word:"The Big Sun",emoji:"☀️",text:"The sun is up. The sun is big and hot. I play in the sun.",questions:[
+    {q:"What is up in the sky?",a:[["The sun","☀️"],["The moon","🌙"],["A kite","🪁"]]},
+    {q:"What do I do in the sun?",a:[["Play","🤸"],["Sleep","😴"],["Cry","😢"]]}]},
+  {id:"s_bus",grade:"prek",word:"The Bus",emoji:"🚌",text:"I see a bus. The bus is yellow. We ride the bus to school.",questions:[
+    {q:"What color is the bus?",a:[["Yellow","🟡"],["Red","🔴"],["Purple","🟣"]]},
+    {q:"Where does the bus go?",a:[["To school","🏫"],["To the moon","🌙"],["To the sea","🌊"]]}]},
+  {id:"s_bedtime",grade:"prek",word:"Bed Time",emoji:"🌙",text:"It is night. I get in my bed. Mom gives me a hug.",questions:[
+    {q:"Where do I go at night?",a:[["My bed","🛏️"],["The park","🌳"],["The bus","🚌"]]},
+    {q:"What does Mom give me?",a:[["A hug","🤗"],["A hat","🎩"],["A ball","⚽"]]}]},
+
+  // ── Kinder ──
+  {id:"s_frog",grade:"kinder",word:"The Frog",emoji:"🐸",text:"A frog sat on a log. The frog saw a bug. Hop, hop, hop! The frog got the bug.",questions:[
+    {q:"Where did the frog sit?",a:[["On a log","🪵"],["On a bed","🛏️"],["In a box","📦"]]},
+    {q:"What did the frog see?",a:[["A bug","🐛"],["A cat","🐱"],["A bus","🚌"]]},
+    {q:"How did the frog move?",a:[["It hopped","🐸"],["It ran","🏃"],["It swam","🏊"]]}]},
+  {id:"s_pup",grade:"kinder",word:"Ben and His Pup",emoji:"🐶",text:"Ben has a pup. The pup can run fast. Ben and the pup play in the mud. Then they get a bath.",questions:[
+    {q:"What pet does Ben have?",a:[["A pup","🐶"],["A hen","🐔"],["A pig","🐷"]]},
+    {q:"Where do they play?",a:[["In the mud","🟤"],["In the bed","🛏️"],["On the bus","🚌"]]},
+    {q:"What do they get at the end?",a:[["A bath","🛁"],["A cake","🎂"],["A nap","😴"]]}]},
+  {id:"s_hen",grade:"kinder",word:"The Little Hen",emoji:"🐔",text:"The hen has six eggs. She sits on the eggs. Crack! Six little chicks pop out.",questions:[
+    {q:"How many eggs does the hen have?",a:[["Six","6️⃣"],["Two","2️⃣"],["Ten","🔟"]]},
+    {q:"What does the hen do?",a:[["She sits on the eggs","🥚"],["She runs away","🏃"],["She eats the eggs","🍳"]]},
+    {q:"What pops out of the eggs?",a:[["Chicks","🐥"],["Frogs","🐸"],["Ducks","🦆"]]}]},
+  {id:"s_kite",grade:"kinder",word:"My Kite",emoji:"🪁",text:"I have a red kite. The wind is strong today. My kite goes up, up, up. I am so happy.",questions:[
+    {q:"What color is the kite?",a:[["Red","🔴"],["Green","🟢"],["Black","⚫"]]},
+    {q:"What makes the kite go up?",a:[["The wind","🌬️"],["The rain","🌧️"],["A bird","🐦"]]},
+    {q:"How do I feel?",a:[["Happy","😊"],["Sad","😢"],["Sleepy","😴"]]}]},
+  {id:"s_cake",grade:"kinder",word:"The Cake",emoji:"🎂",text:"Mom and I make a cake. We mix and mix. The cake is hot. We let it cool, then we eat it. Yum!",questions:[
+    {q:"Who makes the cake?",a:[["Mom and I","👩‍👧"],["Dad and the dog","🐶"],["The hen","🐔"]]},
+    {q:"What do we do before we eat the cake?",a:[["Let it cool","❄️"],["Put it in a box","📦"],["Take it to school","🏫"]]},
+    {q:"What do we do with the cake at the end?",a:[["Eat it","😋"],["Hide it","🙈"],["Sell it","💰"]]}]},
+
+  // ── 1st Grade ──
+  {id:"turtle",grade:"first",word:"The Brave Turtle",emoji:"🐢",text:"Once there was a little turtle named Tess. She lived by a quiet pond. Every morning she watched the butterflies dance. One day she decided to cross the big meadow. It was a long walk but she took it one step at a time.",questions:[
+    {q:"Where did Tess live?",a:["By a quiet pond","In a tall tree","On a farm"]},
+    {q:"What did Tess watch every morning?",a:["The butterflies","The fish","The stars"]},
+    {q:"How did Tess cross the big meadow?",a:["One step at a time","On a bus","She flew over it"]}]},
+  {id:"rain",grade:"first",word:"A Rainy Day",emoji:"🌧️",text:"It was raining outside. Sam did not want to stay inside. But Mom had an idea. They put on boots and went out to jump in puddles. Sam laughed so hard. It turned out to be the best day ever.",questions:[
+    {q:"What was the weather like?",a:["It was raining","It was snowing","It was sunny"]},
+    {q:"What did Sam and Mom put on?",a:["Boots","Hats","Gloves"]},
+    {q:"How did Sam feel at the end?",a:["Happy","Angry","Scared"]}]},
+  {id:"star",grade:"first",word:"Star Journey",emoji:"⭐",text:"Leo looked up at the night sky filled with bright shining stars. He wondered if anyone lived up there. A shooting star zipped past his window. He made a wish for a brave adventure.",questions:[
+    {q:"What did Leo look at?",a:["The night sky","The sea","A book"]},
+    {q:"What zipped past his window?",a:["A shooting star","A bird","A plane"]},
+    {q:"What did Leo wish for?",a:["A brave adventure","A new bike","A puppy"]}]},
+  {id:"garden",grade:"first",word:"The Garden",emoji:"🌻",text:"Mia planted a tiny seed in the garden. Every day she gave it water and sun. One morning she saw a small green shoot. She waited and waited. Then one bright day a big yellow flower opened up just for her.",questions:[
+    {q:"What did Mia plant?",a:["A tiny seed","A big tree","A carrot"]},
+    {q:"What did Mia give the seed every day?",a:["Water and sun","Milk and bread","Snow and ice"]},
+    {q:"What color was the flower?",a:["Yellow","Red","Purple"]}]},
+  {id:"s_tooth",grade:"first",word:"The Wobbly Tooth",emoji:"🦷",text:"Jen had a wobbly tooth. It wiggled when she ate her apple. At lunch the tooth fell out. Jen showed it to her teacher. She put the tooth in a little box to take home.",questions:[
+    {q:"What was wobbly?",a:["Jen's tooth","Jen's chair","Jen's bike"]},
+    {q:"When did the tooth fall out?",a:["At lunch","At bed time","On the bus"]},
+    {q:"Where did Jen put the tooth?",a:["In a little box","In her shoe","Under a tree"]}]},
+
+  // ── 2nd Grade ──
+  {id:"dragon",grade:"second",word:"The Kind Dragon",emoji:"🐲",text:"In a valley beyond the mountains lived a dragon named Pip. Everyone was afraid at first. But Pip only wanted to help. She warmed cold houses with her gentle breath. She lit up dark caves for the rabbits inside. Soon all the animals loved her.",questions:[
+    {q:"How did everyone feel about Pip at first?",a:["Afraid","Happy","Bored"]},
+    {q:"How did Pip help with the cold houses?",a:["She warmed them with her breath","She built a fire","She brought blankets"]},
+    {q:"Why did the animals love Pip in the end?",a:["She was kind and helpful","She was very big","She could fly fast"]}]},
+  {id:"snowday",grade:"second",word:"Snow Day",emoji:"❄️",text:"The school was closed because of snow. Jay ran outside and felt the cold flakes on his face. He built a snowman with a carrot nose and two big button eyes. His little sister came out and they made snow angels together.",questions:[
+    {q:"Why was the school closed?",a:["Because of snow","Because of rain","Because it was a holiday"]},
+    {q:"What did Jay use for the nose of the snowman?",a:["A carrot","A button","A stick"]},
+    {q:"What did Jay and his sister make together?",a:["Snow angels","A snow fort","Hot cocoa"]}]},
+  {id:"s_library",grade:"second",word:"The Library Card",emoji:"📚",text:"Today Ana got her very own library card. She walked slowly past shelves full of books. There were books about sharks, space, and castles. Ana picked a book about a girl who sails around the world. The librarian stamped the card and smiled. Ana read the first page before she even got home.",questions:[
+    {q:"What did Ana get today?",a:["A library card","A new backpack","A pet fish"]},
+    {q:"What was the book Ana picked about?",a:["A girl who sails around the world","A shark who goes to school","A castle in space"]},
+    {q:"How do you think Ana felt about her book?",a:["Excited to read it","Too tired to read it","Afraid of it"]}]},
+  {id:"s_mitten",grade:"second",word:"The Lost Mitten",emoji:"🧤",text:"Omar lost one red mitten on the way to school. He looked in his bag and in his coat. He looked under the bench by the door. At recess, his friend Kim found it near the slide. Omar thanked her and gave her half of his orange. Now he keeps his mittens on a string.",questions:[
+    {q:"What did Omar lose?",a:["A red mitten","A blue hat","His lunch box"]},
+    {q:"Who found it?",a:["His friend Kim","His teacher","His dad"]},
+    {q:"How did Omar thank Kim?",a:["He shared his orange","He gave her the mitten","He drew her a picture"]}]},
+  {id:"s_ants",grade:"second",word:"The Ant Parade",emoji:"🐜",text:"A line of ants marched across the picnic blanket. Each ant carried a tiny crumb of bread. They walked all the way to a hill of sand. One small ant carried a crumb twice its size. It stopped to rest, then kept going. Together the ants filled their home with food.",questions:[
+    {q:"What did each ant carry?",a:["A crumb of bread","A drop of water","A green leaf"]},
+    {q:"Where were the ants going?",a:["To a hill of sand","To a tall tree","To the river"]},
+    {q:"What did the small ant do when it got tired?",a:["It rested, then kept going","It dropped the crumb","It went back"]}]},
+
+  // ── 3rd Grade ──
+  {id:"s_volcano",grade:"third",word:"The Science Fair",emoji:"🌋",text:"Priya wanted to build a volcano for the science fair. Her first try did not work, and the paste stayed flat. She read the steps again and found her mistake. She had forgotten the baking soda. The next day she tried once more. This time, red foam bubbled over the top. Her classmates clapped and asked how she did it. Priya learned that a mistake can be the start of a good idea.",questions:[
+    {q:"What did Priya build?",a:["A volcano","A rocket","A robot"]},
+    {q:"Why did her first try fail?",a:["She forgot the baking soda","She used too much water","She ran out of time"]},
+    {q:"What is the lesson of this story?",a:["Mistakes can help us learn","Science is too hard","It is better to work alone"]}]},
+  {id:"s_newkid",grade:"third",word:"The New Kid",emoji:"🎒",text:"Marcus was new at school and did not know anyone. At lunch he sat alone at the end of a long table. A girl named Rosa noticed him. She picked up her tray and sat across from him. They found out they both loved drawing comics. By the end of lunch they had made up a hero called Captain Noodle. Marcus walked back to class with a smile and a new friend.",questions:[
+    {q:"Why was Marcus sitting alone?",a:["He was new and did not know anyone","He was in trouble","He did not like lunch"]},
+    {q:"What did Marcus and Rosa both love?",a:["Drawing comics","Playing soccer","Singing songs"]},
+    {q:"Which word best describes Rosa?",a:["Kind","Shy","Grumpy"]}]},
+  {id:"s_beach",grade:"third",word:"Beach Day Helpers",emoji:"🏖️",text:"On Saturday, Tasha and her grandpa went to the beach. They saw plastic bottles and bags along the shore. Grandpa said that trash can hurt sea turtles and birds. So they each took a bag and started picking it up. Other families saw them and joined in. In one hour the sand was clean again. Tasha felt proud as the waves rolled in.",questions:[
+    {q:"What did Tasha and Grandpa see on the shore?",a:["Plastic bottles and bags","Sea shells and crabs","A sand castle"]},
+    {q:"Why is trash a problem at the beach?",a:["It can hurt sea animals","It makes the water cold","It scares the waves"]},
+    {q:"What happened when other families saw them?",a:["They joined in","They went home","They laughed"]}]},
+  {id:"s_owl",grade:"third",word:"The Night Owl",emoji:"🦉",text:"Owls are birds that hunt at night. Their big eyes help them see in the dark. Soft feathers let them fly without a sound. An owl can turn its head almost all the way around. It listens for tiny mice moving in the grass. When the sun comes up, the owl goes back to its tree to sleep.",questions:[
+    {q:"When do owls hunt?",a:["At night","At noon","In the morning"]},
+    {q:"What helps an owl fly quietly?",a:["Its soft feathers","Its big eyes","Its sharp beak"]},
+    {q:"What does the owl do when the sun comes up?",a:["It sleeps in its tree","It hunts for fish","It flies south"]}]},
+  {id:"s_bike",grade:"third",word:"Learning to Ride",emoji:"🚲",text:"Diego got a blue bike for his birthday. The first time he tried to ride, he tipped over. His knee hurt, and he wanted to quit. His big sister told him that she fell many times too. Diego took a deep breath and got back on. He wobbled, then rolled, then zoomed down the path. He could not wait to ride again tomorrow.",questions:[
+    {q:"What did Diego get for his birthday?",a:["A blue bike","A red kite","A skateboard"]},
+    {q:"What did his sister tell him?",a:["That she fell many times too","That he should stop","That bikes are dangerous"]},
+    {q:"What did Diego do before he got back on?",a:["He took a deep breath","He ate a snack","He fixed the wheel"]}]},
+
+  // ── 4th Grade ──
+  {id:"s_lighthouse",grade:"fourth",word:"The Lighthouse Keeper",emoji:"🌊",text:"Long ago, a girl named Ida lived in a lighthouse with her family. Her father kept the great lamp burning every night. One winter he became sick and could not climb the stairs. Ida was only twelve, but she knew what to do. She carried the oil up the steps and lit the lamp herself. That night a storm rolled in from the sea. A fishing boat was lost in the dark waves. The sailors saw the light and steered safely to shore. In the morning they came to thank the keeper. They were amazed to find it was a brave young girl.",questions:[
+    {q:"Why could Ida's father not light the lamp?",a:["He was sick","He was away at sea","He lost the oil"]},
+    {q:"How did the sailors find their way to shore?",a:["They saw the light","They heard a bell","They followed the birds"]},
+    {q:"Why were the sailors amazed?",a:["The keeper was a young girl","The storm ended so quickly","The lighthouse was so tall"]}]},
+  {id:"s_honey",grade:"fourth",word:"How Bees Make Honey",emoji:"🐝",text:"Honeybees work together in a busy hive. Worker bees fly from flower to flower to collect sweet nectar. They carry the nectar home in a special stomach. Back at the hive, they pass it to other bees. Those bees chew the nectar until it starts to change. Then they store it in tiny wax cells. The bees fan their wings to dry it out. Slowly the nectar becomes thick, golden honey. The bees seal each cell with a cap of wax. The honey will feed the hive all winter long.",questions:[
+    {q:"What do worker bees collect from flowers?",a:["Nectar","Wax","Water"]},
+    {q:"Why do the bees fan their wings?",a:["To dry out the nectar","To cool the flowers","To scare away birds"]},
+    {q:"What is the honey used for?",a:["To feed the hive in winter","To build the hive","To attract flowers"]}]},
+  {id:"s_spelling",grade:"fourth",word:"The Spelling Bee",emoji:"🏅",text:"Amara had practiced her spelling words for weeks. On the day of the contest, her hands would not stop shaking. She walked to the microphone and heard her word. For a moment her mind went blank. Then she remembered what her coach had told her. She closed her eyes and pictured the word on paper. She spelled it slowly, one letter at a time. The judge nodded, and the crowd cheered. Amara did not win first place that day. Still, she was proud that she had faced her fear.",questions:[
+    {q:"How did Amara feel at the start of the contest?",a:["Nervous","Bored","Angry"]},
+    {q:"What helped Amara spell the word?",a:["She pictured it on paper","A friend whispered it","She made a lucky guess"]},
+    {q:"Why was Amara proud?",a:["She faced her fear","She won first place","She finished quickly"]}]},
+  {id:"s_desert",grade:"fourth",word:"Life in the Desert",emoji:"🌵",text:"A desert may look empty, but it is full of life. The days are very hot, and rain is rare. Plants and animals have clever ways to survive. A cactus stores water inside its thick stem. Its sharp spines keep thirsty animals away. Many desert animals sleep during the day. They come out at night when the air is cool. The desert fox has huge ears that let heat escape. Some toads stay under the ground for months. They wait for the rain to return.",questions:[
+    {q:"Where does a cactus store water?",a:["In its thick stem","In its spines","In its flowers"]},
+    {q:"Why do many desert animals come out at night?",a:["The air is cooler","They are afraid of the sun","The plants glow in the dark"]},
+    {q:"What is the main idea of this text?",a:["Desert plants and animals have ways to survive","Deserts are empty places","A cactus is a dangerous plant"]}]},
+  {id:"s_treehouse",grade:"fourth",word:"The Tree House Plan",emoji:"🌳",text:"Lena and her cousin Theo wanted to build a tree house. They did not have much money, so they made a plan. First they drew a picture of what they wanted. Then they asked neighbors for old boards and nails. One neighbor gave them wood from a broken fence. Theo's mother showed them how to measure and cut safely. It took three weekends of hard work. The floor was a little crooked, and the roof leaked once. But when they climbed up and looked out, it felt like a castle. They had built it with their own hands.",questions:[
+    {q:"Why did Lena and Theo make a plan?",a:["They did not have much money","They were bored","Their teacher asked them to"]},
+    {q:"Where did some of the wood come from?",a:["A broken fence","A store","The forest"]},
+    {q:"How did they feel about the tree house at the end?",a:["Proud","Disappointed","Worried"]}]},
+
+  // ── 5th Grade ──
+  {id:"s_rover",grade:"fifth",word:"A Robot on Mars",emoji:"🚀",text:"Millions of miles from Earth, a robot rolls across a red and dusty plain. It is a rover, a machine built to explore the planet Mars. Scientists on Earth send it instructions by radio. Because Mars is so far away, each message takes many minutes to arrive. The rover must be able to make some choices by itself. It uses cameras to spot rocks and avoid steep slopes. A robotic arm drills into the ground to collect samples. The rover studies these samples for signs of ancient water. Water matters because living things need it to survive. If Mars once had lakes and rivers, tiny life might have existed there long ago. Every picture the rover sends home helps us understand our neighbor in space. One day, people may follow the path that this robot has made.",questions:[
+    {q:"How do scientists send instructions to the rover?",a:["By radio","By rocket","By telephone wire"]},
+    {q:"Why must the rover make some choices by itself?",a:["Messages take many minutes to arrive","The scientists are asleep","It has no radio"]},
+    {q:"Why are scientists looking for signs of ancient water?",a:["Water could mean life once existed there","They want to fill a lake","The rover needs water to move"]}]},
+  {id:"s_violin",grade:"fifth",word:"The Violin in the Attic",emoji:"🎻",text:"Nadia found the violin on a rainy afternoon in her grandmother's attic. It lay in a dusty case beneath a pile of old quilts. Two of its strings were broken, and the wood had lost its shine. Her grandmother explained that it had belonged to her own father. He had played it at weddings and festivals in a village far across the ocean. Nadia asked if she could learn to play it. Her grandmother smiled and took the violin to a repair shop. A week later it came back gleaming, with four new strings. Nadia's first notes sounded like a squeaky door. She practiced every evening, even when her fingers ached. By spring she could play one of the old village songs. When her grandmother heard it, she closed her eyes and hummed along. The music had found its way home.",questions:[
+    {q:"Where did Nadia find the violin?",a:["In her grandmother's attic","In a music store","At school"]},
+    {q:"Who did the violin first belong to?",a:["Her grandmother's father","Her music teacher","A neighbor"]},
+    {q:"What does the last sentence most likely mean?",a:["The family's music was being played again","The violin was sent back across the ocean","Nadia went home early"]}]},
+  {id:"s_rainforest",grade:"fifth",word:"The Layers of a Rainforest",emoji:"🌴",text:"A tropical rainforest is like a tall building with different floors. Each layer has its own plants and animals. The top layer is made of the tallest trees, which rise above everything else. Eagles and butterflies live up there in the bright sun. Below it is the canopy, a thick roof of leaves and branches. Most rainforest animals live in the canopy, including monkeys, parrots, and sloths. Beneath the canopy, the air is dim and still. Young trees and plants with large leaves grow in this shady layer. Jaguars rest on low branches and watch for prey. The forest floor is the darkest layer of all. Very little sunlight reaches the ground. Insects, fungi, and fallen leaves turn into rich soil there. Together, these layers make a home for more than half of the kinds of plants and animals on Earth.",questions:[
+    {q:"What is the canopy?",a:["A thick roof of leaves and branches","The darkest layer of the forest","A kind of monkey"]},
+    {q:"Where do most rainforest animals live?",a:["In the canopy","On the forest floor","Above the tallest trees"]},
+    {q:"Why is the forest floor so dark?",a:["Very little sunlight reaches it","It is always night there","The soil is black"]}]},
+  {id:"s_debate",grade:"fifth",word:"The Debate",emoji:"🎤",text:"Jordan had always been the quiet one in class. So when the teacher announced a debate, his stomach tied itself in knots. His team had to argue that the school should start a garden. Jordan spent the week gathering facts. He learned that gardens can teach science and provide fresh food for the cafeteria. On the day of the debate, his voice shook during his first sentence. He paused, took a slow breath, and looked down at his notes. Nobody laughed, and nobody rushed him. He began again, and this time the words came steadily. He explained his facts one by one. When he finished, the room was silent for a second. Then his teammates burst into applause. Jordan realized that being quiet did not mean he had nothing to say.",questions:[
+    {q:"What did Jordan's team argue for?",a:["Starting a school garden","A longer recess","A new library"]},
+    {q:"What did Jordan do when his voice shook?",a:["He paused and took a slow breath","He sat down","He asked a friend to finish"]},
+    {q:"What did Jordan learn about himself?",a:["Being quiet did not mean he had nothing to say","He should never speak in class","Debates are easy"]}]},
+  {id:"s_monarch",grade:"fifth",word:"The Longest Journey",emoji:"🦋",text:"Every autumn, millions of monarch butterflies begin an amazing journey. They leave the northern parts of North America as the weather turns cold. Their destination is a group of mountain forests in Mexico, thousands of miles away. A monarch weighs less than a paper clip. Even so, it can fly up to one hundred miles in a single day. The butterflies ride on warm currents of air to save energy. At night they rest together in trees. No one is completely sure how they find their way. Scientists think they use the position of the sun as a compass. What makes the trip even more surprising is that these butterflies have never made it before. They are the great grandchildren of the monarchs that flew north in spring. Somehow they still arrive at the very same forests. In the mountains they cluster on the trees by the thousands and wait for spring.",questions:[
+    {q:"Where do the monarchs travel to?",a:["Mountain forests in Mexico","Beaches in Canada","Deserts in Africa"]},
+    {q:"How do the butterflies save energy?",a:["They ride on warm currents of air","They sleep all day","They walk part of the way"]},
+    {q:"What is surprising about the butterflies that make the trip?",a:["They have never made the journey before","They are the oldest butterflies","They travel alone"]}]},
+];
+// Scene for each story: the place, and the things that appear as the story goes.
+// Each thing is [picture, a word that is in the story, "sky" if it belongs up high].
+const STORY_PICS={
+  s_redball:[["⚽","ball"],["🔴","red"],["🦶","kick"]],
+  s_mycat:[["🐱","cat"],["🧸","soft"],["😴","nap"]],
+  s_bigsun:[["☀️","sun","sky"],["🔥","hot"],["🤸","play"]],
+  s_bus:[["🚌","bus"],["🟡","yellow"],["🏫","school"]],
+  s_bedtime:[["🌙","night","sky"],["🛏️","bed"],["🤗","hug"]],
+  s_frog:[["🐸","frog"],["🪵","log"],["🐛","bug"]],
+  s_pup:[["🐶","pup"],["💨","run"],["🟤","mud"],["🛁","bath"]],
+  s_hen:[["🐔","hen"],["🥚","eggs"],["🐥","chicks"]],
+  s_kite:[["🪁","kite","sky"],["🌬️","wind","sky"],["😊","happy"]],
+  s_cake:[["🎂","cake"],["🥣","mix"],["🔥","hot"],["😋","eat"]],
+  turtle:[["🐢","turtle"],["🏞️","pond"],["🦋","butterflies","sky"],["🌾","meadow"],["👣","step"]],
+  rain:[["🌧️","raining","sky"],["💡","idea"],["🥾","boots"],["💦","puddles"],["😄","laughed"]],
+  star:[["🌌","sky","sky"],["⭐","stars","sky"],["🌠","shooting","sky"],["🏠","window"],["🗺️","adventure"]],
+  garden:[["🌱","seed"],["💧","water"],["☀️","sun","sky"],["🌿","shoot"],["🌻","flower"]],
+  s_tooth:[["🦷","tooth"],["🍎","apple"],["🍽️","lunch"],["👩‍🏫","teacher"],["📦","box"]],
+  dragon:[["⛰️","mountains"],["🐲","dragon"],["🏠","houses"],["🕯️","lit"],["🐰","rabbits"]],
+  snowday:[["🏫","school"],["❄️","snow","sky"],["⛄","snowman"],["🥕","carrot"],["👧","sister"]],
+  s_library:[["📚","books"],["🦈","sharks"],["🚀","space","sky"],["🏰","castles"],["🌍","world"]],
+  s_mitten:[["🧤","mitten"],["🎒","bag"],["🚪","door"],["👧","friend"],["🍊","orange"]],
+  s_ants:[["🐜","ants"],["🧺","picnic"],["🍞","bread"],["⛰️","hill"],["🏠","home"]],
+  s_volcano:[["🌋","volcano"],["🔬","science"],["📖","steps"],["👏","clapped"],["💡","idea"]],
+  s_newkid:[["🏫","school"],["🍽️","lunch"],["👧","girl"],["✏️","comics"],["🦸","hero"]],
+  s_beach:[["🏖️","beach"],["🧴","bottles"],["🐢","turtles"],["🐦","birds","sky"],["🌊","waves"]],
+  s_owl:[["🦉","owls","sky"],["🌙","night","sky"],["🪶","feathers"],["🐭","mice"],["🌳","tree"]],
+  s_bike:[["🚲","bike"],["🎂","birthday"],["🦵","knee"],["👧","sister"],["🌬️","breath","sky"]],
+  s_lighthouse:[["🗼","lighthouse"],["💡","lamp","sky"],["⛈️","storm","sky"],["⛵","boat"],["🧑‍🤝‍🧑","sailors"]],
+  s_honey:[["🏠","hive"],["🐝","bees","sky"],["🌸","flower"],["🕯️","wax"],["🍯","honey"]],
+  s_spelling:[["📝","words"],["🎤","microphone"],["📄","paper"],["👩‍⚖️","judge"],["👏","crowd"]],
+  s_desert:[["🏜️","desert"],["🌵","cactus"],["🦊","fox"],["🐸","toads"],["🌧️","rain","sky"]],
+  s_treehouse:[["🌳","tree"],["📝","plan"],["🪵","boards"],["🔨","nails"],["🏰","castle"]],
+  s_rover:[["🌍","earth","sky"],["🤖","robot"],["📻","radio","sky"],["📷","cameras"],["💧","water"]],
+  s_violin:[["🎻","violin"],["🧵","quilts"],["🌊","ocean"],["🚪","door"],["🎶","music","sky"]],
+  s_rainforest:[["🦅","eagles","sky"],["🐒","monkeys"],["🦜","parrots","sky"],["🐆","jaguars"],["🍂","leaves"]],
+  s_debate:[["🌱","garden"],["📚","facts"],["📝","notes"],["🍎","food"],["👏","applause"]],
+  s_monarch:[["🦋","butterflies","sky"],["⛰️","mountain"],["📎","clip"],["☀️","sun","sky"],["🧭","compass"]],
+};
+// Where each story happens.
+const STORY_BG={
+  s_redball:'day',s_mycat:'indoor',s_bigsun:'day',s_bus:'day',s_bedtime:'night',
+  s_frog:'forest',s_pup:'day',s_hen:'day',s_kite:'day',s_cake:'indoor',
+  turtle:'forest',rain:'rain',star:'night',garden:'day',s_tooth:'indoor',
+  dragon:'day',snowday:'snow',s_library:'indoor',s_mitten:'day',s_ants:'day',
+  s_volcano:'indoor',s_newkid:'indoor',s_beach:'beach',s_owl:'night',s_bike:'day',
+  s_lighthouse:'sea',s_honey:'day',s_spelling:'indoor',s_desert:'desert',s_treehouse:'forest',
+  s_rover:'space',s_violin:'indoor',s_rainforest:'forest',s_debate:'indoor',s_monarch:'day',
+};
+// sky colour, ground colour, and small decorations as [picture, left %, top %]
+const SCENE_THEMES={
+  day:   {sky:'#E6F1FB',ground:'#EAF3DE',decor:[['☁️',10,12],['☁️',90,20]]},
+  forest:{sky:'#E1F5EE',ground:'#C0DD97',decor:[['🌲',4,50],['🌲',96,48]]},
+  rain:  {sky:'#D3D1C7',ground:'#EAF3DE',decor:[['☁️',10,12],['☁️',90,16]]},
+  snow:  {sky:'#E6F1FB',ground:'#FFFFFF',decor:[['❄️',8,14],['❄️',92,24],['❄️',50,8]]},
+  night: {sky:'#26215C',ground:'#3C3489',decor:[['✨',8,14],['✨',92,22],['✨',50,8]]},
+  indoor:{sky:'#FAEEDA',ground:'#F5C4B3',decor:[['🖼️',7,16]]},
+  beach: {sky:'#E6F1FB',ground:'#FAEEDA',decor:[['☁️',10,12],['☁️',88,18]]},
+  sea:   {sky:'#26215C',ground:'#0C447C',decor:[['✨',8,14],['✨',50,8]]},
+  desert:{sky:'#FAEEDA',ground:'#FAC775',decor:[['☁️',90,14]]},
+  space: {sky:'#26215C',ground:'#993C1D',decor:[['✨',10,22],['✨',50,8],['✨',90,30]]},
+};
+STORIES.forEach(s=>{s.isStory=true;s.sounds=[];s.theme='story';s.pics=STORY_PICS[s.id]||[];s.bg=STORY_BG[s.id]||'day';});
+const WORD_CATS={
+  Colors:['red','blue','green','yellow','orange','purple','pink','white','black','brown','gold','gray'],
+  Animals:['cat','dog','bird','fish','bear','duck','frog','lion','owl','deer','sheep','horse'],
+  Actions:['jump','run','sit','play','read','sing','draw','help','swim','fly','clap','walk'],
+  Feelings:['happy','sad','brave','calm','proud','kind','safe','loved','glad','free','silly','scared'],
+  Numbers:['one','two','three','four','five','six','seven','eight','nine','ten','zero','eleven'],
+  School:['book','desk','chair','pencil','class','write','learn','share','listen','think','paint','count'],
+  Family:['mom','dad','sister','brother','grandma','grandpa','baby','uncle','aunt','home','cousin','family'],
+  Food:['apple','bread','milk','eggs','rice','corn','cake','soup','fish','beans','pasta','fruit'],
+  Sports:['ball','kick','throw','catch','race','swim','team','goal','score','court','field','coach'],
+  Nature:['tree','rain','wind','leaf','rock','river','cloud','flower','grass','mountain','ocean','forest'],
+  'Community':['doctor','teacher','nurse','police','farmer','baker','driver','cook','mayor','helper','builder','fireman'],
+  'Christmas':['gift','bell','snow','star','tree','santa','angel','candle','wreath','sleigh','reindeer','carol'],
+  'Spring':['seed','rain','bloom','nest','chick','kite','mud','grow','warm','bud','robin','garden'],
+  'Fall':['leaf','apple','corn','rake','acorn','hay','pumpkin','harvest','wind','brown','orange','crisp'],
+};
+const GRADE_META={
+  prek:  {label:'Pre-K',    short:'PK',name:'Pre-K', tone:'coral',ids:['cat','bug','hen','sun','log','cup','bed','box','hat','ham','yam','the','you']},
+  kinder:{label:'Kinder',   short:'K', name:'Kinder',tone:'mint', ids:['fox','pig','rat','mud','den','pot','pen','bag','fig','and','was','are','frog','flag','snow','leaf','seed','kite']},
+  first: {label:'1st Grade',short:'1', name:'1st',   tone:'sun',  ids:['map','drum','grin','clap','trip','said','have','they','gift','bell','flock','plant']},
+  second:{label:'2nd Grade',short:'2', name:'2nd',   tone:'sky',  ids:['smile','bread','grape','storm']},
+  third: {label:'3rd Grade',short:'3', name:'3rd',   tone:'lav',  ids:[]},
+  fourth:{label:'4th Grade',short:'4', name:'4th',   tone:'coral',ids:[]},
+  fifth: {label:'5th Grade',short:'5', name:'5th',   tone:'mint', ids:[]},
+};
+// one colour family per kind of word, so a child can spot a category at a glance
+const THEME_TONE={animals:'mint',spring:'mint',nature:'sky',winter:'sky',actions:'sky',objects:'sun',clothes:'sun',school:'sun',custom:'sun',
+  food:'coral',fall:'coral',christmas:'coral','sight word':'lav',feelings:'lav',music:'lav'};
+const STORY_TONES=['sky','coral','mint','lav','sun'];
+const CHECK_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const EYE_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+
+const SETTINGS_DEF=[
+  {key:'speechOn',label:'Speech recognition',sub:'Mic button available for students',def:true},
+  {key:'breathOn',label:'Breathing guide',sub:'Breathing animation on calm screen',def:true},
+  {key:'slowMode',label:'Slow gentle voice',sub:'Best for children who stutter',def:true},
+  {key:'effortOn',label:'Count effort in Review',sub:'After 3 spoken tries, a practice word counts as done',def:true},
+];
+
+let state=loadState();
+state.missed=state.missed||{};
+state.settings=state.settings||{};
+SETTINGS_DEF.forEach(s=>{if(state.settings[s.key]===undefined)state.settings[s.key]=s.def;});
+let lessons=[...LESSONS];
+let allStories=[...STORIES];
+let currentLesson=null,currentStep=0,buildOrder=[],breathActive=false,breathTimer=null,breathPhaseIdx=0,wordCat='Colors',fontSize=state.fontSize||22,micListening=false,matchDone=false,attemptCount=0,heardPhonemes=new Set(),selectedGrade=GRADE_META[state.selectedGrade]?state.selectedGrade:'prek';
+let chosenVoice=null;
+
+function loadState(){try{const s=localStorage.getItem('rayp_v4');return s?JSON.parse(s):defState();}catch(e){return defState();}}
+function defState(){return{stars:0,lessonsCompleted:[],wordsPracticed:[],soundsHeard:{},prefMode:{speak:0,listen:0,watch:0},settings:{speechOn:true,breathOn:true,slowMode:true,effortOn:true},fontSize:22,selectedGrade:'prek',missed:{}};}
+function save(){try{localStorage.setItem('rayp_v4',JSON.stringify(state));}catch(e){}}
+
+function pickVoice(){
+  const vs=speechSynthesis.getVoices();
+  const prefer=['Samantha','Karen','Moira','Tessa','Victoria','Fiona','Google US English','Microsoft Zira','en-US','en-GB','en-AU'];
+  for(const name of prefer){const v=vs.find(x=>x.name.includes(name)||x.lang.startsWith(name));if(v){chosenVoice=v;return;}}
+  chosenVoice=vs.find(v=>v.lang.startsWith('en'))||vs[0]||null;
+}
+speechSynthesis.onvoiceschanged=pickVoice;
+setTimeout(pickVoice,400);
+
+function speakText(text,rate,pitch){
+  speechSynthesis.cancel();
+  const utt=new SpeechSynthesisUtterance(text);
+  utt.rate=rate||(state.settings.slowMode?0.62:0.85);
+  utt.pitch=pitch||1.08;
+  if(chosenVoice)utt.voice=chosenVoice;
+  speechSynthesis.speak(utt);
+}
+
+function showNav(id,btn){
+  stopAllAudio();speechSynthesis.cancel();stopConfetti();
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const nb=(btn&&btn.classList.contains('nav-btn'))?btn:document.querySelector('.nav-btn[data-nav="'+id+'"]');
+  if(nb)nb.classList.add('active');
+  if(id==='rewards')renderRewards();
+  if(id==='lessons')backToList();   // the Lessons tab always goes to the main page
+  if(id==='review')renderReview();
+  if(id==='teacher')refreshDash();
+}
+
+function adjFont(d){fontSize=Math.min(34,Math.max(16,fontSize+d*2));state.fontSize=fontSize;save();applyFont();}
+function applyFont(){
+  document.querySelectorAll('.read-word').forEach(e=>e.style.fontSize=Math.min(56,fontSize*2.2)+'px');
+  document.querySelectorAll('.lc-word').forEach(e=>e.style.fontSize=(e.dataset.story?Math.max(16,fontSize-6):Math.max(23,fontSize+1))+'px');
+  document.querySelectorAll('.sound-letter,.build-slot,.build-tile').forEach(e=>e.style.fontSize=Math.max(22,fontSize+8)+'px');
+  document.querySelectorAll('.story-text').forEach(e=>e.style.fontSize=fontSize+'px');
+  document.querySelectorAll('.quiz-q').forEach(e=>e.style.fontSize=Math.max(18,fontSize-2)+'px');
+  document.querySelectorAll('.quiz-opt').forEach(e=>e.style.fontSize=Math.max(15,fontSize-6)+'px');
+}
+
+function buildGradeTabs(){
+  const bar=document.getElementById('gradeTabs');bar.innerHTML='';
+  Object.entries(GRADE_META).forEach(([key,g])=>{
+    const on=selectedGrade===key;
+    const btn=document.createElement('button');
+    btn.className='grade-btn tone-'+g.tone+(on?' active':'');
+    btn.setAttribute('aria-pressed',on?'true':'false');
+    btn.setAttribute('aria-label',g.label);
+    btn.dataset.grade=key;
+    btn.innerHTML='<span class="grade-dot">'+g.short+'</span><span class="grade-name">'+g.name+'</span>';
+    btn.onclick=()=>{
+      selectedGrade=key;state.selectedGrade=key;save();buildGradeTabs();buildLessonGrid();
+      const now=bar.querySelector('.grade-btn.active');if(now)now.focus({preventScroll:true});
+    };
+    bar.appendChild(btn);
+  });
+}
+function lessonCard(l,tone,done){
+  const d=document.createElement('button');
+  d.className='lesson-card tone-'+tone+(done?' done':'');
+  const chk=document.createElement('span');chk.className='lc-check';chk.innerHTML=CHECK_SVG;
+  d.appendChild(chk);
+  if(done){const sr=document.createElement('span');sr.className='sr-only';sr.textContent='Completed. ';d.appendChild(sr);}
+  d.onclick=()=>startLesson(l);
+  return d;
+}
+function buildLessonGrid(){
+  const meta=GRADE_META[selectedGrade]||GRADE_META.prek;
+  const ids=new Set(meta.ids);
+  const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
+  const g=document.getElementById('lessonGrid');g.innerHTML='';
+  const list=lessons.filter(l=>ids.has(l.id)||l.theme==='custom');
+  document.getElementById('lessonSectionLabel').style.display=list.length?'':'none';
+  g.style.display=list.length?'':'none';
+  let total=0,doneN=0,lessonDone=0;
+  list.forEach(l=>{
+    const done=state.lessonsCompleted.includes(l.id);
+    total++;if(done){doneN++;lessonDone++;}
+    const d=lessonCard(l,THEME_TONE[l.theme]||'sun',done);
+    const pic=document.createElement('span');pic.className='lc-pic';
+    if(l.theme==='sight word')pic.innerHTML=EYE_SVG;else pic.textContent=l.emoji||'📝';
+    const word=document.createElement('span');word.className='lc-word';word.textContent=l.word;
+    const theme=document.createElement('span');theme.className='lc-theme';theme.textContent=cap(l.theme);
+    d.appendChild(pic);d.appendChild(word);d.appendChild(theme);
+    g.appendChild(d);
+  });
+  document.getElementById('lessonCount').textContent=lessonDone+' of '+list.length+' done';
+  const sg=document.getElementById('storyGrid');sg.innerHTML='';
+  const stories=allStories.filter(s=>s.grade===selectedGrade||s.theme==='custom');
+  let storyDone=0;
+  stories.forEach((s,i)=>{
+    const done=state.lessonsCompleted.includes(s.id);
+    total++;if(done){doneN++;storyDone++;}
+    const d=lessonCard(s,STORY_TONES[i%STORY_TONES.length],done);
+    const pic=document.createElement('span');pic.className='lc-pic';pic.textContent=s.emoji;
+    const title=document.createElement('span');title.className='lc-word';title.dataset.story='1';title.textContent=s.word;
+    const sub=document.createElement('span');sub.className='lc-theme';
+    sub.textContent=(s.questions&&s.questions.length)?s.questions.length+' questions':'Story';
+    d.appendChild(pic);d.appendChild(title);d.appendChild(sub);
+    sg.appendChild(d);
+  });
+  document.getElementById('storyCount').textContent=storyDone+' of '+stories.length+' done';
+  updateHomeProgress(meta,doneN,total);
+  applyFont();
+}
+// The progress card under the grade picker. It counts what has been finished, nothing else.
+function updateHomeProgress(meta,doneN,total){
+  const box=document.getElementById('homeProgress');
+  box.className='home-progress tone-'+meta.tone;
+  const pct=total?Math.round(doneN/total*100):0;
+  document.getElementById('hpTitle').textContent=meta.label+' reading path';
+  document.getElementById('hpCount').textContent=doneN+' of '+total+' done';
+  document.getElementById('hpFill').style.width=pct+'%';
+  document.getElementById('hpBar').setAttribute('aria-valuenow',pct);
+  document.getElementById('hpMsg').textContent=
+    !doneN?'Let\'s read together! Pick a lesson or a story.':
+    doneN>=total?'You finished everything here. Amazing!':
+    pct>=50?'You are becoming a word explorer!':'Great job! Keep going.';
+}
+
+function startLesson(l){
+  currentLesson=l;currentStep=0;buildOrder=[];matchDone=false;attemptCount=0;heardPhonemes=new Set();
+  resetStoryState();
+  document.getElementById('screen-pick').style.display='none';
+  document.getElementById('screen-lesson').style.display='block';
+  buildStepDots();setupCalm();goStep(0);
+}
+function backToList(){
+  const wasStory=document.getElementById('screen-lesson').style.display!=='none'&&currentLesson&&currentLesson.isStory;
+  document.getElementById('screen-pick').style.display='block';
+  document.getElementById('screen-lesson').style.display='none';
+  stopAllAudio();stopBreath();speechSynthesis.cancel();buildLessonGrid();
+  if(wasStory){try{document.getElementById('storySectionLabel').scrollIntoView({block:'start'});}catch(e){}}
+  else window.scrollTo(0,0);
+}
+
+const WORD_STEPS=['step-calm','step-listen','step-build','step-read','step-match','step-done'];
+const ALL_STEPS=['step-calm','step-listen','step-build','step-read','step-match','step-story','step-quiz','step-done'];
+const STEP_LABELS={'step-calm':'Calm','step-listen':'Listen','step-build':'Build','step-read':'Read','step-match':'Match','step-story':'Read','step-quiz':'Play','step-done':'Done'};
+function lessonSteps(){
+  if(!currentLesson.isStory)return WORD_STEPS;
+  return quizItems.length
+    ?['step-calm','step-story','step-quiz','step-done']
+    :['step-calm','step-story','step-done'];
+}
+function buildStepDots(){
+  const dots=document.getElementById('stepDots');dots.innerHTML='';
+  const n=lessonSteps().length-1;
+  for(let i=0;i<n;i++){const d=document.createElement('div');d.className='step-dot';dots.appendChild(d);}
+}
+function updateDots(step){
+  document.querySelectorAll('.step-dot').forEach((d,i)=>{d.classList.remove('active','done');if(i<step)d.classList.add('done');if(i===step)d.classList.add('active');});
+  document.getElementById('stepLabel').textContent=STEP_LABELS[lessonSteps()[step]]||'';
+}
+
+function goStep(s){
+  stopAllAudio();
+  const steps=lessonSteps();
+  s=Math.max(0,Math.min(s,steps.length-1));
+  currentStep=s;
+  ALL_STEPS.forEach(id=>document.getElementById(id).style.display='none');
+  const id=steps[s];
+  document.getElementById(id).style.display='block';
+  updateDots(s);
+  const setup={'step-listen':setupListen,'step-build':setupBuild,'step-read':setupRead,'step-match':setupMatch,'step-story':setupStory,'step-quiz':setupQuiz,'step-done':finishLesson}[id];
+  if(setup)setup();
+}
+
+function setupCalm(){
+  document.getElementById('calmTitle').textContent=currentLesson.isStory?currentLesson.word:'Let\'s read: '+currentLesson.word;
+  if(state.settings.breathOn)startBreath();
+}
+
+function setupListen(){
+  const c=document.getElementById('soundLetters');c.innerHTML='';
+  currentLesson.sounds.forEach(letter=>{
+    const wrap=document.createElement('div');wrap.style.textAlign='center';
+    const btn=document.createElement('div');btn.className='sound-letter';btn.textContent=letter;
+    btn.onclick=()=>{
+      speakText('/'+letter+'/',0.5,1.1);
+      btn.classList.add('playing');
+      state.soundsHeard[letter]=(state.soundsHeard[letter]||0)+1;save();
+      setTimeout(()=>btn.classList.remove('playing'),800);
+    };
+    const lbl=document.createElement('div');lbl.className='sound-label';lbl.textContent='/'+letter+'/';
+    wrap.appendChild(btn);wrap.appendChild(lbl);c.appendChild(wrap);
+  });
+  showFeedback('fb-listen','neutral','Tap each letter to hear its sound');
+}
+
+function setupBuild(){
+  buildOrder=[];
+  const slots=document.getElementById('buildSlots');slots.innerHTML='';
+  const tiles=document.getElementById('buildTiles');tiles.innerHTML='';
+  currentLesson.sounds.forEach((_,i)=>{const slot=document.createElement('div');slot.className='build-slot';slot.id='slot-'+i;slots.appendChild(slot);});
+  [...currentLesson.sounds].sort(()=>Math.random()-.5).forEach((letter,i)=>{
+    const tile=document.createElement('div');tile.className='build-tile';tile.textContent=letter;tile.id='tile-'+i;
+    tile.onclick=()=>placeLetter(letter,tile);tiles.appendChild(tile);
+  });
+  document.getElementById('buildNext').style.opacity='.4';document.getElementById('buildNext').style.pointerEvents='none';
+  showFeedback('fb-build','neutral','Tap each letter to put it in place');
+}
+
+function placeLetter(letter,tile){
+  const nextSlot=buildOrder.length;if(nextSlot>=currentLesson.sounds.length)return;
+  buildOrder.push(letter);tile.classList.add('used');
+  const slot=document.getElementById('slot-'+nextSlot);slot.textContent=letter;slot.classList.add('filled');
+  speakText('/'+letter+'/',0.5,1.1);
+  if(buildOrder.length===currentLesson.sounds.length){
+    if(buildOrder.join('')===currentLesson.sounds.join('')){
+      showFeedback('fb-build','good','You built the word!');
+      document.getElementById('buildNext').style.opacity='1';document.getElementById('buildNext').style.pointerEvents='auto';
+      setTimeout(()=>speakText(currentLesson.word,0.6,1.1),600);
+    } else {
+      showFeedback('fb-build','gentle','Nice try! Tap reset and try again.');
+    }
+  }
+}
+function resetBuild(){setupBuild();}
+
+// ── LISTENING (stutter-friendly) ───────────────────────────────
+// Repeats, pauses and stretched sounds are all fine. Nothing lights
+// up unless the recognizer actually heard it.
+const ENCOURAGE_MSGS=[
+  'You are doing wonderfully!',
+  'Keep going — you are so close!',
+  'Take a breath and try again. You have got this.',
+  'Each try makes you stronger. Go again!',
+  'I believe in you — give it another go!',
+  'You are being so brave. Try once more!',
+];
+const SUCCESS_MSGS=[
+  'I heard all your sounds — amazing job!',
+  'You said it! That was wonderful!',
+  'Perfect — every sound was there!',
+  'Brilliant! I heard every single sound!',
+];
+const MIC_DENIED_MSG='I need permission to use the microphone. Tap the lock icon in the address bar to allow it, then try again.';
+const MIC_UNSUPPORTED_MSG='Speech listening works best in Chrome on a computer or Android phone. You can still tap Listen with me.';
+
+let rec=null,recTimer=null,recOn=false,micCfg=null,heardText='';
+const MAX_LISTEN_MS=45000;
+
+function micSupported(){return !!(window.SpeechRecognition||window.webkitSpeechRecognition);}
+
+// One entry per thing the child said. Some phones repeat a growing copy of the
+// same phrase ("the", "the cat", "the cat sat"); those are merged into one.
+function collectResults(e){
+  const out=[];
+  for(let i=0;i<e.results.length;i++){
+    const r=e.results[i],alts=[];
+    for(let j=0;j<r.length;j++)alts.push(r[j].transcript);
+    const best=(alts[0]||'').trim();
+    if(!best)continue;
+    const last=out[out.length-1];
+    if(last&&best.toLowerCase().startsWith(last.best.toLowerCase()))out[out.length-1]={best,alts};
+    else out.push({best,alts});
+  }
+  return out;
+}
+
+function micStart(cfg){
+  micAbort();
+  speechSynthesis.cancel();
+  micCfg=cfg;recOn=true;
+  recTimer=setTimeout(micFinish,cfg.maxMs);
+  startRec();
+}
+function startRec(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const cfg=micCfg,mine=new SR();
+  rec=mine;
+  mine.lang='en-US';mine.continuous=true;mine.interimResults=true;mine.maxAlternatives=5;
+  mine.onresult=(e)=>{if(!cfg.dead)cfg.onResults(collectResults(e));};
+  mine.onerror=(e)=>{
+    if((e.error==='not-allowed'||e.error==='service-not-allowed')&&micCfg===cfg){
+      micAbort();if(cfg.onDenied)cfg.onDenied();
+    }
+  };
+  mine.onend=()=>{
+    if(recOn&&micCfg===cfg&&rec===mine){
+      if(cfg.onSessionEnd)cfg.onSessionEnd();
+      setTimeout(()=>{if(recOn&&micCfg===cfg){try{startRec();}catch(err){}}},250);
+    }
+  };
+  try{mine.start();}catch(err){}
+}
+function micAbort(){
+  const c=micCfg,was=recOn;
+  recOn=false;micCfg=null;clearTimeout(recTimer);
+  if(c)c.dead=true;
+  try{if(rec)rec.abort();}catch(e){}
+  if(was&&c&&c.onUI)c.onUI(false);
+}
+function micFinish(){
+  if(!recOn)return;
+  const c=micCfg;
+  recOn=false;micCfg=null;clearTimeout(recTimer);
+  try{if(rec)rec.stop();}catch(e){}
+  if(c.onUI)c.onUI(false);
+  setTimeout(()=>{if(c.dead)return;c.dead=true;c.onFinish();},450);
+}
+function stopAllAudio(){micAbort();stopStoryTalk();}
+
+function lev(a,b){
+  const m=[];
+  for(let i=0;i<=a.length;i++)m[i]=[i];
+  for(let j=1;j<=b.length;j++)m[0][j]=j;
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)
+    m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return m[a.length][b.length];
+}
+
+// ── WORD LESSONS: sound check ──────────────────────────────────
+const LETTER_NAMES={see:'c',sea:'c',bee:'b',dee:'d',gee:'g',tee:'t',tea:'t',pee:'p',pea:'p',ess:'s',em:'m',en:'n',el:'l',eff:'f',kay:'k',jay:'j',vee:'v',zee:'z',aitch:'h',oh:'o',ay:'a',ex:'x',why:'y'};
+
+function setupRead(){
+  heardPhonemes=new Set();attemptCount=0;
+  document.getElementById('readWord').textContent=currentLesson.word;
+  const ph=document.getElementById('readPhonemes');ph.innerHTML='';
+  currentLesson.sounds.forEach((s,i)=>{
+    const pill=document.createElement('div');pill.className='phoneme-pill';
+    pill.textContent='/'+s+'/';pill.id='ph-'+i;ph.appendChild(pill);
+  });
+  document.getElementById('listenStatus').textContent='';
+  showFeedback('fb-read','','');
+  setMicUI(false);
+}
+
+function readWithMe(){
+  micAbort();
+  const rate=state.settings.slowMode?0.58:0.82;
+  state.prefMode.listen=(state.prefMode.listen||0)+1;save();
+  const lesson=currentLesson;
+  lesson.sounds.forEach((s,i)=>{
+    setTimeout(()=>{
+      if(currentLesson!==lesson||currentStep!==3)return;
+      speakText('/'+s+'/',rate,1.1);
+      const pill=document.getElementById('ph-'+i);
+      if(pill){pill.classList.add('model');setTimeout(()=>pill.classList.remove('model'),900);}
+    },i*1000);
+  });
+  setTimeout(()=>{
+    if(currentLesson!==lesson||currentStep!==3)return;
+    speakText(lesson.word,rate,1.08);
+    showFeedback('fb-read','good','Listen to how the sounds come together!');
+  },lesson.sounds.length*1000+400);
+}
+
+function normalizeTokens(t){
+  return t.toLowerCase().replace(/[^a-z\s]/g,' ').split(/\s+/).filter(Boolean);
+}
+function soundsInToken(tok,target){
+  const sounds=currentLesson.sounds,idx=new Set();
+  tok=destutter(tok);
+  const kt=soundKey(target);
+  if(kt.length>=2&&soundKey(tok)===kt){sounds.forEach((_,i)=>idx.add(i));return idx;}
+  // whole word (or one letter off for longer words) = every sound heard
+  if(tok===target||(target.length>=4&&lev(tok,target)<=1)){
+    sounds.forEach((_,i)=>idx.add(i));return idx;
+  }
+  // a single spoken letter, e.g. "c" ... "a" ... "t"
+  if(tok.length===1){sounds.forEach((s,i)=>{if(s===tok)idx.add(i);});return idx;}
+  // spoken letter names, e.g. "see" "tee"
+  const L=LETTER_NAMES[tok];
+  if(L){sounds.forEach((s,i)=>{if(s===L)idx.add(i);});return idx;}
+  // a partial attempt must start with the word's first sound ("ca", "cu", "caaat")
+  if(tok.length>target.length+1||tok[0]!==sounds[0])return idx;
+  let pos=0;
+  sounds.forEach((s,i)=>{const f=tok.indexOf(s,pos);if(f>=0){idx.add(i);pos=f+1;}});
+  return idx;
+}
+function analyzeAlternatives(alts){
+  const target=currentLesson.word.toLowerCase();
+  alts.forEach(t=>normalizeTokens(t).forEach(tok=>{
+    soundsInToken(tok,target).forEach(i=>heardPhonemes.add(i));
+  }));
+  heardPhonemes.forEach(i=>{
+    const pill=document.getElementById('ph-'+i);
+    if(pill)pill.classList.add('heard');
+  });
+}
+
+function setMicUI(on){
+  const btn=document.getElementById('micBtn');
+  btn.className=on?'mode-btn mic-active':'mode-btn';
+  btn.textContent=on?'I am done':'I will try';
+}
+
+function tryMic(){
+  if(!state.settings.speechOn){showFeedback('fb-read','neutral','Speech is turned off in settings.');return;}
+  if(recOn){micFinish();return;}
+  if(!micSupported()){showFeedback('fb-read','gentle',MIC_UNSUPPORTED_MSG);return;}
+  attemptCount++;heardText='';
+  state.prefMode.speak=(state.prefMode.speak||0)+1;save();
+  showFeedback('fb-read','neutral','Take your time. I will wait for you.');
+  document.getElementById('listenStatus').textContent='Listening… tap "I am done" when you finish';
+  micStart({
+    maxMs:MAX_LISTEN_MS,
+    onUI:setMicUI,
+    onResults:(rs)=>{
+      heardText=rs.map(r=>r.best).join(' ').trim();
+      const alts=[];rs.forEach(r=>r.alts.forEach(a=>alts.push(a)));
+      analyzeAlternatives(alts);
+      if(heardPhonemes.size===currentLesson.sounds.length)micFinish();
+    },
+    onDenied:()=>{document.getElementById('listenStatus').textContent='';showFeedback('fb-read','gentle',MIC_DENIED_MSG);},
+    onFinish:evaluateAttempt,
+  });
+  setMicUI(true);
+}
+
+function evaluateAttempt(){
+  const total=currentLesson.sounds.length,found=heardPhonemes.size;
+  document.getElementById('listenStatus').textContent='';
+  if(found===total){
+    showFeedback('fb-read','good',SUCCESS_MSGS[Math.floor(Math.random()*SUCCESS_MSGS.length)]);
+  } else if(found>0){
+    const enc=ENCOURAGE_MSGS[Math.min(attemptCount-1,ENCOURAGE_MSGS.length-1)];
+    showFeedback('fb-read','gentle','I heard '+found+' of '+total+' sounds. '+enc);
+  } else {
+    showFeedback('fb-read','gentle','I did not catch a sound that time, and that is okay. Take a gentle breath and try again whenever you are ready.');
+  }
+}
+
+// ── STORIES: reading aloud ─────────────────────────────────────
+const STORY_MAX_LISTEN_MS=600000;   // ten minutes, never shown to the child
+const STORY_PASS=0.7;
+const STORY_END_QUIET_MS=5000;      // near the end, wait this long with nothing new before finishing
+let storyEndTimer=null;               // share of words heard that counts as a full read
+const NUM_WORDS={0:'zero',1:'one',2:'two',3:'three',4:'four',5:'five',6:'six',7:'seven',8:'eight',9:'nine',10:'ten',11:'eleven',12:'twelve',100:'one hundred'};
+let storyWords=[],storySpans=[],storyHeard=new Set(),storyPtr=0,storySessPtr=0,storyCelebrated=false;
+let storyTalking=false,storyTalkId=0,storyUtter=null;
+
+function storyTokens(t){
+  return t.toLowerCase()
+    .replace(/\d+/g,n=>' '+(NUM_WORDS[n]||'')+' ')
+    .replace(/['’]/g,'')
+    .replace(/[^a-z\s]/g,' ')
+    .split(/\s+/).filter(Boolean);
+}
+function resetStoryState(){
+  storyWords=[];storySpans=[];storyDisplay=[];storyPicEls=[];storySentEnd=[];storyRevealed=new Set();storyHeard=new Set();storyPtr=0;storySessPtr=0;storyCelebrated=false;
+  quizIdx=0;quizSolved=false;quizItems=buildQuizItems(currentLesson);
+}
+
+function setupStory(){
+  const l=currentLesson;
+  document.getElementById('storyTitle').textContent=l.emoji+' '+l.word;
+  const body=document.getElementById('storyBody');body.innerHTML='';
+  storyWords=[];storySpans=[];storyDisplay=[];storySentEnd=[];
+  const sents=(l.text.match(/[^.!?]+[.!?]*\s*/g)||[l.text]).map(s=>s.trim()).filter(Boolean);
+  const trim=w=>w.replace(/^[^A-Za-z0-9]+|[^A-Za-z0-9]+$/g,'');
+  // names keep their capital letter in the Review list
+  const names=new Set();
+  sents.forEach(s=>s.split(/\s+/).forEach((w,i)=>{const t=trim(w);if(i>0&&/^[A-Z]/.test(t))names.add(t.toLowerCase());}));
+  sents.forEach(s=>{
+    const sp=document.createElement('span');sp.className='sent';
+    s.split(/\s+/).forEach(w=>{
+      const ws=document.createElement('span');ws.className='sw';ws.textContent=w;
+      const toks=storyTokens(w),t=trim(w),at=storyWords.length;
+      toks.forEach(tok=>{
+        storyWords.push(tok);storySpans.push(ws);
+        storyDisplay.push(toks.length===1?(names.has(t.toLowerCase())?t:t.toLowerCase()):tok);
+      });
+      ws.onclick=()=>{
+        storyPicEls.forEach((p,k)=>{if(p.idxs.includes(at))revealPic(k);});
+        if(recOn||storyTalking)return;
+        const say=w.replace(/[^A-Za-z0-9'’]/g,'');
+        if(say)speakText(say,state.settings.slowMode?0.6:0.82,1.08);
+      };
+      sp.appendChild(ws);sp.appendChild(document.createTextNode(' '));
+    });
+    body.appendChild(sp);
+    const rp=document.createElement('button');rp.className='sent-play';rp.setAttribute('aria-label','Hear this sentence again');
+    rp.innerHTML='<svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3l4-3.5v12l-4-3.5H4z"/><path d="M15 9.5a3.5 3.5 0 0 1 0 5"/></svg>';
+    rp.onclick=()=>replaySentence(sp);
+    body.appendChild(rp);body.appendChild(document.createTextNode(' '));
+    storySentEnd.push(storyWords.length-1);
+  });
+  buildStoryPics();
+  paintStory();
+  document.getElementById('storyCongrats').style.display=storyCelebrated?'block':'none';
+  document.getElementById('storyStatus').textContent='';
+  showFeedback('fb-story','','');
+  setStoryMicUI(false);setStoryTalkUI(false);
+  updateStoryReviewLink();
+  applyFont();
+}
+
+// The scene: things appear as the story goes. A thing shows up when the child
+// reads its word, when "Listen with me" reaches its sentence, when the reading
+// has moved past it, or when its word is tapped in the story.
+let storyDisplay=[],storyPicEls=[],storySentEnd=[],storyRevealed=new Set();
+function popPic(el){el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');}
+function revealPic(k){
+  const p=storyPicEls[k];
+  if(!p||storyRevealed.has(k))return;
+  storyRevealed.add(k);p.el.classList.add('shown');setTimeout(()=>playFx(k),380);
+}
+function revealUpTo(wordIdx){storyPicEls.forEach((p,k)=>{if(p.first<=wordIdx)revealPic(k);});}
+function buildStoryPics(){
+  const box=document.getElementById('storyScene');box.innerHTML='';storyPicEls=[];
+  const l=currentLesson,theme=SCENE_THEMES[l.bg]||SCENE_THEMES.day;
+  const pics=(l.pics||[]).map(pic=>{
+    const tok=storyTokens(pic[1]).join(''),idxs=[];
+    storyWords.forEach((w,i)=>{if(w===tok)idxs.push(i);});
+    return {emoji:pic[0],word:pic[1],sky:pic[2]==='sky',idxs,first:idxs.length?idxs[0]:1e9};
+  }).sort((a,b)=>a.first-b.first);          // left to right in story order
+  box.style.display=pics.length?'block':'none';
+  document.getElementById('picsHint').style.display=pics.length?'block':'none';
+  box.style.setProperty('--sky',theme.sky);box.style.setProperty('--ground',theme.ground);
+  theme.decor.forEach(d=>{
+    const s=document.createElement('span');s.className='scene-decor';s.textContent=d[0];
+    s.style.left=d[1]+'%';s.style.top=d[2]+'%';box.appendChild(s);
+  });
+  let nSky=0,nGround=0;
+  pics.forEach((pic,k)=>{
+    const b=document.createElement('button');b.className='scene-item';
+    b.style.left=((k+0.5)/pics.length*100)+'%';
+    b.style.top=pic.sky?((nSky++%2)?32:22)+'%':((nGround++%2)?78:68)+'%';
+    const dot=document.createElement('span');dot.className='scene-dot';
+    const e=document.createElement('span');e.className='pic-emoji';const fxEl=document.createElement('span');fxEl.className='fx';fxEl.textContent=pic.emoji;e.appendChild(fxEl);
+    const t=document.createElement('span');t.className='pic-label';t.textContent=pic.word;
+    b.appendChild(dot);b.appendChild(e);b.appendChild(t);
+    b.onclick=()=>{
+      if(!storyRevealed.has(k))return;      // not in the story yet
+      popPic(b);showSceneWord(pic.word);playFx(k);
+      pic.idxs.forEach((i,n)=>{
+        const s=storySpans[i];if(!s)return;
+        s.classList.add('spot');setTimeout(()=>s.classList.remove('spot'),1800);
+        if(n===0){try{s.scrollIntoView({behavior:'smooth',block:'nearest'});}catch(err){}}
+      });
+      if(!recOn&&!storyTalking)speakText(pic.word,state.settings.slowMode?0.6:0.82,1.08);
+    };
+    if(storyRevealed.has(k))b.classList.add('shown');
+    box.appendChild(b);storyPicEls.push({el:b,idxs:pic.idxs,first:pic.first,word:pic.word});
+  });
+  if(pics.length){
+    const big=document.createElement('div');big.className='scene-word';big.id='sceneWord';big.setAttribute('aria-live','polite');box.appendChild(big);
+    const m=document.createElement('button');m.className='scene-motion';m.id='sceneMotion';m.onclick=toggleMotion;box.appendChild(m);
+    paintMotionBtn();
+  }
+}
+// What each thing does when it arrives in the scene, and again when it is tapped.
+// a = how it moves, p = little bits that fly off it.
+const WORD_FX={};
+(function(){
+  const set=(spec,words)=>words.split(' ').forEach(w=>{WORD_FX[w]=spec;});
+  set({a:'dash'},'bus bike robot ants mice fox sharks sailors');
+  set({a:'hop'},'pup frog rabbits toads play kick ball chicks hen cat happy laughed hero monkeys jaguars turtle snowman turtles girl friend');
+  set({a:'float'},'kite wind breath space music feathers leaves earth clip world');
+  set({a:'flutter'},'butterflies birds bees eagles parrots bug owls');
+  set({a:'sway'},'boat waves ocean meadow');
+  set({a:'shine',p:'spark'},'sun lamp idea lit');
+  set({a:'twinkle'},'stars night sky');
+  set({a:'shoot',p:'spark'},'shooting');
+  set({a:'float',p:'rain'},'raining rain');
+  set({a:'shake',p:'rain'},'storm');
+  set({a:'pulse',p:'rain'},'water');
+  set({a:'float',p:'snow'},'snow');
+  set({a:'pulse',p:'splat'},'mud puddles');
+  set({a:'pulse',p:'bubbles'},'bath mix');
+  set({a:'grow'},'seed shoot flower garden tree cactus');
+  set({a:'shake'},'crack eggs');
+  set({a:'shake',p:'spark'},'volcano');
+  set({a:'pulse',p:'spark'},'cake birthday hot');
+  set({a:'pulse',p:'spark'},'clapped applause crowd');
+  set({p:'zzz'},'nap bed');
+  set({a:'pulse'},'hug sister teacher');
+})();
+// A word can also move something else: in "Ben and His Pup", reading "run" makes the pup run.
+const STORY_FX={s_pup:{run:{a:'float',target:'pup',ta:'dash'}}};
+function fxSpec(word){return (STORY_FX[currentLesson.id]||{})[word]||WORD_FX[word]||null;}
+function runAnim(el,name){
+  if(!el||state.settings.motionOff)return;
+  const f=el.querySelector('.fx');if(!f)return;
+  f.className='fx';void f.offsetWidth;
+  f.style.setProperty('--dir',(parseFloat(el.style.left)||50)>55?-1:1);
+  f.classList.add('fx-'+name);
+}
+function particles(el,kind){
+  const box=document.getElementById('storyScene');
+  if(!box||state.settings.motionOff)return;
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const cx=el.offsetLeft,cy=el.offsetTop,n=(kind==='rain'||kind==='snow')?10:7;
+  for(let i=0;i<n;i++){
+    const s=document.createElement('span');let cls,dx,dy,x=cx-5,y=cy-10;
+    if(kind==='bubbles'){cls='p-bubble';dx=(i-3)*10;dy=-48-(i%3)*14;}
+    else if(kind==='splat'){cls='p-mud';dx=(i-3)*15;dy=-16-(i%2)*18;}
+    else if(kind==='rain'){cls='p-drop';x=cx-42+i*9;y=cy+14;dx=-6;dy=58;}
+    else if(kind==='snow'){cls='p-snow';x=cx-46+i*10;y=cy+12;dx=i%2?9:-9;dy=66;}
+    else if(kind==='zzz'){cls='p-z';s.textContent='z';dx=14+i*6;dy=-22-i*9;}
+    else{cls='p-spark';dx=Math.cos(i/n*6.283)*40;dy=Math.sin(i/n*6.283)*40;}
+    s.className='fx-p '+cls;s.style.left=x+'px';s.style.top=y+'px';
+    s.style.setProperty('--dx',dx+'px');s.style.setProperty('--dy',dy+'px');
+    s.style.animationDelay=(i*70)+'ms';
+    box.appendChild(s);setTimeout(()=>s.remove(),1750+i*70);
+  }
+}
+function playFx(k){
+  const p=storyPicEls[k];if(!p||state.settings.motionOff)return;
+  const s=fxSpec(p.word);if(!s)return;
+  if(s.a)runAnim(p.el,s.a);
+  if(s.p)particles(p.el,s.p);
+  if(s.target){
+    const t=storyPicEls.findIndex(x=>x.word===s.target);
+    if(t>=0&&storyRevealed.has(t))runAnim(storyPicEls[t].el,s.ta||'dash');
+  }
+}
+let sceneWordTimer=null;
+function showSceneWord(word){
+  const el=document.getElementById('sceneWord');if(!el)return;
+  el.textContent=word;el.classList.add('on');
+  clearTimeout(sceneWordTimer);sceneWordTimer=setTimeout(()=>el.classList.remove('on'),1900);
+}
+function paintMotionBtn(){
+  const off=!!state.settings.motionOff;
+  document.body.classList.toggle('motion-off',off);
+  const m=document.getElementById('sceneMotion');if(!m)return;
+  m.setAttribute('aria-label',off?'Let the pictures move':'Stop the pictures moving');
+  m.title=off?'Let the pictures move':'Stop the pictures moving';
+  m.innerHTML=off?'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>'
+                 :'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4.2" height="14" rx="1.2"/><rect x="13.8" y="5" width="4.2" height="14" rx="1.2"/></svg>';
+}
+function toggleMotion(){state.settings.motionOff=!state.settings.motionOff;save();paintMotionBtn();}
+function paintStory(){
+  let far=-1;
+  storyHeard.forEach(i=>{const s=storySpans[i];if(s)s.classList.add('heard');if(i>far)far=i;});
+  revealUpTo(far);
+  storyPicEls.forEach((p,k)=>{
+    const found=p.idxs.some(i=>storyHeard.has(i));
+    if(found&&!p.el.classList.contains('found')){revealPic(k);p.el.classList.add('found');popPic(p.el);}
+    if(!found)p.el.classList.remove('found');
+  });
+}
+function hideScene(){
+  storyRevealed=new Set();
+  storyPicEls.forEach(p=>p.el.classList.remove('shown','found','pop'));
+}
+
+const HOMOPHONES={};
+[['to','too','two'],['for','four'],['one','won'],['eight','ate'],['their','there'],['sun','son'],['see','sea'],
+ ['by','buy','bye'],['here','hear'],['no','know'],['new','knew'],['red','read'],['would','wood'],['be','bee'],
+ ['i','eye'],['week','weak'],['our','hour'],['not','knot'],['night','knight'],['made','maid'],['way','weigh'],
+ ['wait','weight'],['rode','road'],['tale','tail'],['flower','flour'],['pair','pear'],['right','write'],['so','sew']
+].forEach(g=>g.forEach(w=>{HOMOPHONES[w]=g;}));
+function wordsMatch(tok,w){
+  if(tok===w)return true;
+  const h=HOMOPHONES[w];
+  if(h&&h.includes(tok))return true;
+  if(w.length>=4&&tok.length>=3&&lev(tok,w)<=1)return true;
+  if(w.length>=7&&tok.length>=5&&lev(tok,w)<=2)return true;
+  return false;
+}
+// ── Hearing a word the way a child who stutters may say it ─────
+// Stretched sounds:      "ssssun"       -> sun
+// Repeated starts:       "wo-wo-wobbled" or "wowowobbled" -> wobbled
+function destutter(t){
+  return t.replace(/(.)\1{2,}/g,'$1').replace(/^(.{1,3}?)\1+/,'$1');
+}
+// A rough "how it sounds" code: vowels dropped, look-alike sounds grouped
+// (b/p, d/t, g/k, f/v, s/z). "wobbled", "wobbelt" and "why bold" all give WPLT.
+const SOUND_MAP={b:'p',d:'t',g:'k',v:'f',z:'s',c:'k',q:'k',m:'n'};
+const soundKeyMemo=new Map();
+function soundKey(w){
+  if(!soundKeyMemo.has(w))soundKeyMemo.set(w,soundKeyRaw(w));
+  return soundKeyMemo.get(w);
+}
+function soundKeyRaw(w){
+  let s=w.toLowerCase().replace(/[^a-z]/g,'');
+  if(!s)return '';
+  s=s.replace(/^kn/,'n').replace(/^gn/,'n').replace(/^wr/,'r').replace(/^wh/,'w').replace(/^ps/,'s')
+     .replace(/x/g,'ks').replace(/tch/g,'j').replace(/dge/g,'j').replace(/ght/g,'t').replace(/gh/g,'')
+     .replace(/ph/g,'f').replace(/ck/g,'k').replace(/ch/g,'j').replace(/sh/g,'x').replace(/th/g,'t')
+     .replace(/qu/g,'kw').replace(/c(?=[eiy])/g,'s');
+  let out='';
+  for(let i=0;i<s.length;i++){
+    const ch=s[i];
+    if('aeiou'.includes(ch)){if(i===0)out+='a';continue;}
+    if((ch==='h'||ch==='y'||ch==='w')&&i>0)continue;
+    out+=SOUND_MAP[ch]||ch;
+  }
+  return out.replace(/(.)\1+/g,'$1');
+}
+function soundsLike(tok,target){
+  if(wordsMatch(tok,target)||wordsMatch(destutter(tok),target))return true;
+  const kt=soundKey(target),kk=soundKey(destutter(tok));
+  if(!kt||!kk)return false;
+  if(kk===kt)return true;
+  if(kt.length>=3)return lev(kk,kt)<=1;
+  // short words ("knee", "quit", "eat"): same first sound and at most one sound extra or missing
+  return kk[0]===kt[0]&&Math.abs(kk.length-kt.length)<=1&&(kk.startsWith(kt)||kt.startsWith(kk));
+}
+// Story reading uses a stricter version: the spelling is close, or it sounds the same.
+function storyWordMatch(tok,w){
+  if(wordsMatch(tok,w))return true;
+  const d=destutter(tok);
+  if(d!==tok&&wordsMatch(d,w))return true;
+  const kw=soundKey(w);
+  return kw.length>=3&&soundKey(d)===kw;
+}
+// Looks through everything the recognizer offered, including its second and
+// third guesses, and pieces of a word it split in two ("why bold").
+function heardWordIn(rs,target){
+  let got=false,close=false;
+  const kt=soundKey(target);
+  rs.forEach(r=>r.alts.forEach(a=>{
+    const toks=storyTokens(a);
+    for(let i=0;i<toks.length;i++){
+      for(let n=1;n<=3&&i+n<=toks.length;n++){
+        if(soundsLike(toks.slice(i,i+n).join(''),target))got=true;
+      }
+      if(kt&&soundKey(toks[i])[0]===kt[0])close=true;
+    }
+  }));
+  return {got,close};
+}
+
+// Follows the child through the story. Repeated words are ignored, a few
+// skipped words are fine, and going back to re-read a sentence is followed too.
+function alignStory(tokens,startPtr){
+  const n=storyWords.length,hits=[];
+  let ptr=startPtr,last='',prev='';
+  for(const tok of tokens){
+    let found=-1;
+    const repeat=(tok===last&&storyWords[ptr]!==tok);
+    if(!repeat){
+      const span=tok.length<=3?3:6;
+      for(let i=ptr;i<Math.min(n,ptr+span);i++){
+        if(storyWordMatch(tok,storyWords[i])){found=i;break;}
+      }
+      // not nearby: look for the last two spoken words together elsewhere in the story
+      if(found<0&&prev&&(tok.length>=4||prev.length>=4)){
+        let best=-1,bestD=1e9;
+        for(let i=1;i<n;i++){
+          if(storyWordMatch(tok,storyWords[i])&&storyWordMatch(prev,storyWords[i-1])){
+            const d=Math.abs(i-ptr);
+            if(d<bestD){bestD=d;best=i;}
+          }
+        }
+        if(best>=0){hits.push(best-1);found=best;}
+      }
+      // or a word just behind that was missed
+      if(found<0){
+        for(let i=ptr-1;i>=Math.max(0,ptr-4);i--){
+          if(!storyHeard.has(i)&&!hits.includes(i)&&storyWordMatch(tok,storyWords[i])){hits.push(i);break;}
+        }
+      }
+    }
+    if(found>=0){hits.push(found);ptr=found+1;last=tok;}
+    prev=tok;
+  }
+  return {hits,ptr};
+}
+
+function storyCoverage(){return storyWords.length?storyHeard.size/storyWords.length:0;}
+function storyReachedEnd(slack){
+  const n=storyWords.length;
+  for(let i=Math.max(0,n-slack);i<n;i++)if(storyHeard.has(i))return true;
+  return false;
+}
+function storyReadFully(slack){return storyCoverage()>=STORY_PASS&&storyReachedEnd(slack);}
+
+function setStoryMicUI(on){
+  const btn=document.getElementById('storyMicBtn');
+  btn.classList.toggle('on',!!on);
+  btn.querySelector('.rm-t').textContent=on?'I am done':(storyCelebrated?'Read again':'I can read');
+}
+function setStoryTalkUI(){
+  const l=document.getElementById('storyListenBtn'),e=document.getElementById('storyEchoBtn');
+  l.classList.toggle('on',storyMode==='listen');l.querySelector('.rm-t').textContent=storyMode==='listen'?'Stop':'Listen';
+  e.classList.toggle('on',storyMode==='echo');e.querySelector('.rm-t').textContent=storyMode==='echo'?'Stop':'Read with me';
+  document.getElementById('echoBar').style.display=storyMode==='echo'?'flex':'none';
+}
+
+function storyMic(){
+  if(!state.settings.speechOn){showFeedback('fb-story','neutral','Speech is turned off in settings.');return;}
+  if(recOn){micFinish();return;}
+  if(!micSupported()){showFeedback('fb-story','gentle',MIC_UNSUPPORTED_MSG);return;}
+  stopStoryTalk();
+  if(storyCelebrated){   // reading it again from the start
+    storyHeard=new Set();storyCelebrated=false;
+    storySpans.forEach(s=>s.classList.remove('heard'));hideScene();paintStory();
+    document.getElementById('storyCongrats').style.display='none';
+  }
+  let p=0;while(p<storyWords.length&&storyHeard.has(p))p++;
+  storySessPtr=p;storyPtr=p;
+  state.prefMode.speak=(state.prefMode.speak||0)+1;save();
+  showFeedback('fb-story','neutral','Take your time. I will wait for you.');
+  document.getElementById('storyStatus').textContent='Listening… tap "I am done" when you finish';
+  clearTimeout(storyEndTimer);
+  const cfg={
+    maxMs:STORY_MAX_LISTEN_MS,
+    onUI:setStoryMicUI,
+    onResults:(rs)=>{
+      const a=alignStory(storyTokens(rs.map(r=>r.best).join(' ')),storySessPtr);
+      a.hits.forEach(i=>storyHeard.add(i));
+      storyPtr=a.ptr;
+      paintStory();
+      // Never cut off the ending. If the very last word was heard, finish after a
+      // short pause. If the child is only near the end, keep listening until it
+      // has been quiet for a while, so the last words can still be said.
+      clearTimeout(storyEndTimer);
+      if(storyCoverage()>=STORY_PASS){
+        const wait=storyHeard.has(storyWords.length-1)?1200:(storyReachedEnd(3)?STORY_END_QUIET_MS:0);
+        if(wait)storyEndTimer=setTimeout(()=>{if(recOn&&micCfg===cfg)micFinish();},wait);
+      }
+    },
+    onSessionEnd:()=>{storySessPtr=storyPtr;},
+    onDenied:()=>{document.getElementById('storyStatus').textContent='';showFeedback('fb-story','gentle',MIC_DENIED_MSG);},
+    onFinish:evaluateStory,
+  };
+  micStart(cfg);
+  setStoryMicUI(true);
+}
+
+function evaluateStory(){
+  clearTimeout(storyEndTimer);
+  const n=storyWords.length,h=storyHeard.size;
+  document.getElementById('storyStatus').textContent='';
+  const full=storyReadFully(Math.max(3,Math.ceil(n*0.15)));
+  recordMissed(full);
+  updateStoryReviewLink();
+  if(full){celebrateStory();return;}
+  if(h>0){
+    showFeedback('fb-story','gentle','Nice reading! I heard '+h+' of '+n+' words. The green words are done. Tap "I will read" to keep going whenever you are ready.');
+  } else {
+    showFeedback('fb-story','gentle','I did not catch any words that time, and that is okay. Take a gentle breath and try again whenever you are ready.');
+  }
+}
+
+function celebrateStory(){
+  storyCelebrated=true;
+  state.readAloud=(state.readAloud||0)+1;save();checkBadges(true);
+  storyPicEls.forEach((p,k)=>{revealPic(k);setTimeout(()=>popPic(p.el),150*k);});
+  showFeedback('fb-story','','');
+  const banner=document.getElementById('storyCongrats');
+  banner.style.display='block';
+  setStoryMicUI(false);
+  launchConfetti();
+  try{banner.scrollIntoView({behavior:'smooth',block:'nearest'});}catch(e){}
+}
+
+// ── WORDS TO PRACTICE (Review tab) ─────────────────────────────
+// After a read, the words that were not heard are saved for this story.
+// A word the child said somewhere else in the story is not saved.
+function recordMissed(full){
+  const l=currentLesson;if(!l||!l.isStory)return;
+  let far=-1;storyHeard.forEach(i=>{if(i>far)far=i;});
+  const end=full?storyWords.length:far;   // only the part of the story the child got to
+  const said=new Set();storyHeard.forEach(i=>said.add(storyWords[i]));
+  const seen=new Set(),words=[];
+  for(let i=0;i<end;i++){
+    const tok=storyWords[i];
+    if(storyHeard.has(i)||tok.length<2||said.has(tok)||seen.has(tok))continue;
+    seen.add(tok);words.push({t:tok,d:storyDisplay[i]||tok});
+  }
+  if(words.length)state.missed[l.id]={title:l.word,words};
+  else delete state.missed[l.id];
+  save();updateReviewBadge();
+}
+function updateStoryReviewLink(){
+  const link=document.getElementById('storyReviewLink');
+  const m=currentLesson&&state.missed[currentLesson.id];
+  const n=m?m.words.length:0;
+  link.style.display=n?'block':'none';
+  link.textContent='📝 Practice '+n+' word'+(n===1?'':'s')+' in Review';
+}
+function reviewList(){
+  const map=new Map();
+  Object.values(state.missed).forEach(m=>m.words.forEach(w=>{
+    if(!map.has(w.t))map.set(w.t,{t:w.t,d:w.d,from:[]});
+    map.get(w.t).from.push(m.title);
+  }));
+  return Array.from(map.values());
+}
+function updateReviewBadge(){
+  const n=reviewList().length,b=document.getElementById('reviewBadge');
+  b.textContent=n?String(n):'';b.style.display=n?'inline-block':'none';
+}
+let reviewSel=null;
+function reviewItem(){return reviewList().find(w=>w.t===reviewSel);}
+function renderReview(){
+  const list=reviewList();
+  if(reviewSel&&!list.some(w=>w.t===reviewSel))reviewSel=null;
+  const grid=document.getElementById('reviewGrid');grid.innerHTML='';
+  document.getElementById('reviewEmpty').style.display=list.length?'none':'block';
+  list.forEach(w=>{
+    const card=document.createElement('div');
+    card.className='word-card'+(w.t===reviewSel?' selected':'');
+    card.textContent=w.d;
+    card.onclick=()=>selectReview(w.t);
+    grid.appendChild(card);
+  });
+  const panel=document.getElementById('reviewPanel'),sel=reviewItem();
+  panel.style.display=sel?'block':'none';
+  if(sel){
+    document.getElementById('reviewWord').textContent=sel.d;
+    document.getElementById('reviewFrom').textContent='From: '+sel.from.join(', ');
+  }
+  updateReviewBadge();applyFont();
+}
+function selectReview(t){
+  micAbort();
+  reviewSel=t;
+  showFeedback('fb-review','','');
+  document.getElementById('reviewStatus').textContent='';
+  renderReview();
+  window.scrollTo(0,0);
+  reviewHear();
+}
+function reviewHear(){
+  const w=reviewItem();if(!w)return;
+  micAbort();
+  speakText(w.d,state.settings.slowMode?0.55:0.8,1.08);
+}
+function clearReviewWord(t){
+  Object.keys(state.missed).forEach(id=>{
+    const m=state.missed[id];
+    m.words=m.words.filter(w=>w.t!==t);
+    if(!m.words.length)delete state.missed[id];
+  });
+  state.reviewCleared=(state.reviewCleared||0)+1;
+  save();checkBadges(true);
+}
+function reviewKnow(){
+  const w=reviewItem();if(!w)return;
+  micAbort();
+  clearReviewWord(w.t);reviewSel=null;
+  showFeedback('fb-review','good','Great! "'+w.d+'" is off your list.');
+  renderReview();
+}
+function setReviewMicUI(on){
+  const btn=document.getElementById('reviewMicBtn');
+  btn.className=on?'mode-btn mic-active':'mode-btn';
+  btn.textContent=on?'I am done':'I will try';
+}
+const reviewTries={};   // spoken tries for each word, this visit only
+function reviewMic(){
+  const w=reviewItem();if(!w)return;
+  if(!state.settings.speechOn){showFeedback('fb-review','neutral','Speech is turned off in settings.');return;}
+  if(recOn){micFinish();return;}
+  if(!micSupported()){showFeedback('fb-review','gentle',MIC_UNSUPPORTED_MSG);return;}
+  let got=false,close=false,spoke=false;
+  const status=document.getElementById('reviewStatus');
+  showFeedback('fb-review','neutral','Take your time. I will wait for you.');
+  // The words the recognizer thinks it heard are never shown: a wrong guess
+  // on screen is discouraging and says nothing about how the child read.
+  status.textContent='Listening… tap "I am done" when you finish';
+  micStart({
+    maxMs:MAX_LISTEN_MS,
+    onUI:setReviewMicUI,
+    onResults:(rs)=>{
+      if(rs.length)spoke=true;
+      const r=heardWordIn(rs,w.t);
+      if(r.close)close=true;
+      if(r.got){got=true;micFinish();}
+    },
+    onDenied:()=>{status.textContent='';showFeedback('fb-review','gentle',MIC_DENIED_MSG);},
+    onFinish:()=>{
+      status.textContent='';
+      if(got){
+        clearReviewWord(w.t);reviewSel=null;delete reviewTries[w.t];
+        showFeedback('fb-review','good','I heard it! You said "'+w.d+'". Wonderful!');
+        renderReview();
+        return;
+      }
+      if(!spoke){
+        showFeedback('fb-review','gentle','I did not catch it that time, and that is okay. Try again whenever you are ready.');
+        return;
+      }
+      reviewTries[w.t]=(reviewTries[w.t]||0)+1;
+      if(state.settings.effortOn&&reviewTries[w.t]>=3){
+        // the listening is not perfect; three real tries is real practice
+        clearReviewWord(w.t);reviewSel=null;delete reviewTries[w.t];
+        showFeedback('fb-review','good','You practiced "'+w.d+'" three times. That is great work! It is off your list.');
+        renderReview();
+      } else if(close){
+        showFeedback('fb-review','gentle','That sounded close! Tap "Hear it" to listen again, then try once more.');
+      } else {
+        showFeedback('fb-review','gentle','Good try! Tap "Hear it" to listen again, then try once more.');
+      }
+    },
+  });
+  setReviewMicUI(true);
+}
+
+// "Listen with me": the app reads one sentence at a time and highlights it.
+let storyMode='',echoIdx=-1;   // storyMode: '' | 'listen' | 'echo'
+// Says one sentence. Where the device supports it, the word being spoken is highlighted.
+function saySentence(s,done){
+  const words=Array.from(s.querySelectorAll('.sw')),starts=[];let pos=0;
+  words.forEach(w=>{starts.push(pos);pos+=w.textContent.length+1;});
+  const u=new SpeechSynthesisUtterance(words.map(w=>w.textContent).join(' '));
+  u.rate=state.settings.slowMode?0.68:0.9;u.pitch=1.05;
+  if(chosenVoice)u.voice=chosenVoice;
+  let fin=false;
+  const end=()=>{if(fin)return;fin=true;words.forEach(w=>w.classList.remove('now'));if(done)done();};
+  u.onboundary=(e)=>{
+    if(e.name&&e.name!=='word')return;
+    let k=0;for(let i=0;i<starts.length;i++)if(starts[i]<=e.charIndex)k=i;
+    words.forEach(w=>w.classList.remove('now'));if(words[k])words[k].classList.add('now');
+  };
+  u.onend=end;u.onerror=end;
+  storyUtter=u;speechSynthesis.speak(u);
+}
+// Mode 1, Listen: the app reads the whole story, one sentence at a time.
+function storyListen(){
+  if(storyMode==='listen'){stopStoryTalk();return;}
+  stopStoryTalk();micAbort();
+  state.prefMode.listen=(state.prefMode.listen||0)+1;save();
+  const sents=Array.from(document.querySelectorAll('#storyBody .sent'));
+  const id=++storyTalkId;
+  storyMode='listen';storyTalking=true;setStoryTalkUI();
+  showFeedback('fb-story','','');
+  speechSynthesis.cancel();
+  let i=0;
+  const next=()=>{
+    if(id!==storyTalkId)return;
+    sents.forEach(s=>s.classList.remove('speaking'));
+    if(i>=sents.length){
+      storyMode='';storyTalking=false;setStoryTalkUI();
+      showFeedback('fb-story','good','Nice listening! Now try "Read with me" or "I can read", or tap Next.');
+      return;
+    }
+    revealUpTo(storySentEnd[i]);
+    const s=sents[i++];s.classList.add('speaking');
+    saySentence(s,()=>setTimeout(next,350));
+  };
+  next();
+}
+// Mode 2, Read with me: the app reads a sentence, then waits while the child reads it.
+// The child decides when to move on. Nothing is timed.
+function storyEcho(){
+  if(storyMode==='echo'){stopStoryTalk();return;}
+  stopStoryTalk();micAbort();
+  state.prefMode.listen=(state.prefMode.listen||0)+1;save();
+  storyMode='echo';echoIdx=0;setStoryTalkUI();
+  showFeedback('fb-story','','');
+  echoSay();
+}
+function echoSay(){
+  const sents=Array.from(document.querySelectorAll('#storyBody .sent'));
+  const id=++storyTalkId,msg=document.getElementById('echoMsg');
+  sents.forEach(s=>s.classList.remove('speaking','turn'));
+  speechSynthesis.cancel();
+  if(echoIdx>=sents.length){
+    stopStoryTalk();
+    showFeedback('fb-story','good','We read the whole story together! Try "I can read" next, or tap Next.');
+    return;
+  }
+  const s=sents[echoIdx];
+  revealUpTo(storySentEnd[echoIdx]);
+  s.classList.add('speaking');storyTalking=true;
+  msg.textContent='Listen first…';
+  try{s.scrollIntoView({behavior:'smooth',block:'nearest'});}catch(e){}
+  saySentence(s,()=>{
+    if(id!==storyTalkId||storyMode!=='echo')return;
+    storyTalking=false;s.classList.remove('speaking');s.classList.add('turn');
+    msg.textContent='Your turn! Read the yellow sentence out loud. Take your time.';
+  });
+}
+function echoAgain(){if(storyMode==='echo')echoSay();}
+function echoNext(){if(storyMode==='echo'){echoIdx++;echoSay();}}
+function replaySentence(sp){
+  if(recOn||storyMode)return;
+  speechSynthesis.cancel();
+  document.querySelectorAll('#storyBody .sent').forEach(s=>s.classList.remove('speaking'));
+  sp.classList.add('speaking');
+  saySentence(sp,()=>sp.classList.remove('speaking'));
+}
+function stopStoryTalk(){
+  if(!storyMode&&!storyTalking)return;
+  storyTalkId++;storyMode='';storyTalking=false;echoIdx=-1;
+  speechSynthesis.cancel();
+  document.querySelectorAll('#storyBody .sent').forEach(s=>s.classList.remove('speaking','turn'));
+  document.querySelectorAll('#storyBody .sw.now').forEach(s=>s.classList.remove('now'));
+  setStoryTalkUI();
+}
+
+// ── STORIES: understanding questions ───────────────────────────
+const QUIZ_YES=['Yes! That is right.','You got it!','Great thinking!','That is it. Well done!'];
+const QUIZ_TRY=['Have another look and try again. There is no rush.','Not that one. Have another go!','Good try. Look again and pick another.'];
+let quizIdx=0,quizSolved=false,quizOrder=[],quizItems=[];
+function optText(o){return Array.isArray(o)?o[0]:o;}
+
+// Every picture word used in any story: the pool that activities draw other choices from.
+const PIC_POOL=[];
+(function(){const seen=new Set();Object.values(STORY_PICS).forEach(list=>list.forEach(p=>{
+  if(!seen.has(p[1])&&/^[a-z]+$/.test(p[1])&&!'🔴🟡🟤'.includes(p[0])){seen.add(p[1]);PIC_POOL.push({e:p[0],w:p[1]});}}));})();
+function poolPick(seed,ok,n){
+  const out=[];
+  for(let i=0;i<PIC_POOL.length&&out.length<n;i++){
+    const x=PIC_POOL[(seed*7+i*13)%PIC_POOL.length];
+    if(ok(x)&&!out.includes(x)&&!out.some(o=>o.e===x.e))out.push(x);
+  }
+  return out;
+}
+const DIGRAPH=/^(sh|ch|th|wh|kn|ph|wr|gn)/;
+const ACTIVITY={
+  // word -> picture
+  match(s,pics,seed){
+    const t=pics[seed%pics.length],mine=new Set(pics.map(p=>p.w));
+    const d=poolPick(seed+3,x=>!mine.has(x.w)&&x.e!==t.e,2);
+    if(d.length<2)return null;
+    return {kind:'Match',q:'Which picture shows the word “'+t.w+'”?',a:[[t.w,t.e],[d[0].w,d[0].e],[d[1].w,d[1].e]],picOnly:true};
+  },
+  // find the thing among this story's own pictures
+  find(s,pics,seed){
+    const t=pics[(seed+1)%pics.length];
+    return {kind:'Find it',q:'Look at the story picture. Tap “'+t.w+'”.',a:[[t.w,t.e]].concat(pics.filter(p=>p!==t).map(p=>[p.w,p.e])),picOnly:true,scene:s.bg};
+  },
+  // a sentence from the story with one word left out
+  missing(s,pics,seed){
+    const sents=(s.text.match(/[^.!?]+[.!?]*/g)||[]).map(x=>x.trim());
+    for(let k=0;k<pics.length;k++){
+      const t=pics[(seed+k)%pics.length],re=new RegExp('\\b'+t.w+'\\b','i');
+      const sen=sents.find(x=>re.test(x)&&x.split(/\s+/).length>=3);
+      if(!sen)continue;
+      const others=pics.filter(p=>p!==t).slice(0,2);
+      return {kind:'Missing word',q:'Which word is missing?',sentence:sen.replace(re,'_____'),a:[[t.w,t.e]].concat(others.map(p=>[p.w,p.e]))};
+    }
+    return null;
+  },
+  // same beginning sound
+  sound(s,pics,seed){
+    const mine=new Set(pics.map(p=>p.w));
+    for(let k=0;k<pics.length;k++){
+      const t=pics[(seed+k)%pics.length];
+      if(DIGRAPH.test(t.w)||/^[aeiou]/.test(t.w))continue;
+      const key=soundKey(t.w)[0];
+      const same=poolPick(seed+k,x=>!mine.has(x.w)&&x.w[0]===t.w[0]&&!DIGRAPH.test(x.w),1);
+      const diff=poolPick(seed+k+5,x=>!mine.has(x.w)&&soundKey(x.w)[0]!==key&&x.w[0]!==t.w[0]&&!/^[aeiou]/.test(x.w),2);
+      if(same.length&&diff.length===2)
+        return {kind:'First sound',q:'Which one starts with the same sound as “'+t.w+'”?',a:[[same[0].w,same[0].e],[diff[0].w,diff[0].e],[diff[1].w,diff[1].e]]};
+    }
+    return null;
+  },
+  // put the letters in order
+  build(s,pics,seed){
+    const c=pics.filter(p=>/^[a-z]{3,6}$/.test(p.w)).sort((a,b)=>a.w.length-b.w.length);
+    if(!c.length)return null;
+    const t=c[seed%Math.min(2,c.length)];
+    return {kind:'Build it',type:'build',q:'Build the word for this picture.',word:t.w,emoji:t.e};
+  },
+};
+// A story's own questions first, then three short activities made from its pictures.
+function buildQuizItems(l){
+  if(!l||!l.isStory)return [];
+  const items=(l.questions||[]).map(q=>({kind:'Story question',q:q.q,a:q.a}));
+  const pics=(l.pics||[]).map(p=>({e:p[0],w:p[1]}));
+  if(pics.length>=3){
+    const idx=Math.max(0,STORIES.indexOf(l)),kinds=['match','missing','sound','build','find'];
+    [0,2,4].forEach((step,n)=>{
+      const it=ACTIVITY[kinds[(idx+step)%5]](l,pics,idx+n)||ACTIVITY.match(l,pics,idx+n+1);
+      if(it)items.push(it);
+    });
+  }
+  return items;
+}
+
+function setupQuiz(){
+  if(quizIdx>=quizItems.length)quizIdx=quizItems.length-1;
+  renderQuiz();
+}
+function quizSolve(msg){
+  quizSolved=true;
+  showFeedback('fb-quiz','good',msg||QUIZ_YES[Math.floor(Math.random()*QUIZ_YES.length)]);
+  const next=document.getElementById('quizNext');
+  next.style.opacity='1';next.style.pointerEvents='auto';
+}
+function renderQuiz(){
+  const q=quizItems[quizIdx];
+  quizSolved=false;
+  document.getElementById('quizCount').textContent=(quizIdx+1)+' of '+quizItems.length;
+  document.getElementById('quizKind').textContent=q.kind;
+  document.getElementById('quizQ').textContent=q.q;
+  const sen=document.getElementById('quizSentence');
+  sen.style.display=q.sentence?'block':'none';sen.textContent=q.sentence||'';
+  showFeedback('fb-quiz','','');
+  const next=document.getElementById('quizNext');
+  next.textContent=quizIdx<quizItems.length-1?'Next':'Finish';
+  next.style.opacity='.4';next.style.pointerEvents='none';
+  const box=document.getElementById('quizOpts');box.innerHTML='';
+  box.className='quiz-opts'+(q.picOnly?' pic-row':'')+(q.scene?' on-scene':'');
+  if(q.scene){const th=SCENE_THEMES[q.scene]||SCENE_THEMES.day;box.style.setProperty('--sky',th.sky);box.style.setProperty('--ground',th.ground);}
+  if(q.type==='build'){renderBuild(q,box);quizOrder=[];}
+  else{
+    quizOrder=q.a.map((o,i)=>({o,ok:i===0})).sort(()=>Math.random()-.5);
+    quizOrder.forEach((item,n)=>{
+      const b=document.createElement('button');b.className='quiz-opt';
+      if(Array.isArray(item.o)){
+        const e=document.createElement('span');e.className='quiz-emoji';e.textContent=item.o[1];b.appendChild(e);
+      }
+      if(q.picOnly)b.setAttribute('aria-label','Picture '+(n+1));
+      else{const t=document.createElement('span');t.textContent=optText(item.o);b.appendChild(t);}
+      b.onclick=()=>{
+        if(quizSolved)return;
+        if(item.ok){b.classList.add('correct');quizSolve();}
+        else{
+          b.classList.add('tried');
+          showFeedback('fb-quiz','gentle',q.kind==='Story question'
+            ?'Have another look. You can go back to the story and then try again.'
+            :QUIZ_TRY[Math.floor(Math.random()*QUIZ_TRY.length)]);
+        }
+      };
+      box.appendChild(b);
+    });
+  }
+  applyFont();
+  const g=currentLesson.grade;
+  if(g==='prek'||g==='kinder')setTimeout(()=>{if(quizItems[quizIdx]===q&&!quizSolved&&document.getElementById('step-quiz').style.display!=='none')hearQuestion();},400);
+}
+// Build a word: tap the letters in order. A wrong try just puts the letters back.
+function renderBuild(q,box){
+  const word=q.word,placed=[];
+  const pic=document.createElement('div');pic.className='build-pic';pic.textContent=q.emoji;
+  const slots=document.createElement('div');slots.className='build-row';
+  const tiles=document.createElement('div');tiles.className='build-row';
+  const slotEls=[],tileEls=[];
+  for(let i=0;i<word.length;i++){const s=document.createElement('div');s.className='b-slot';slots.appendChild(s);slotEls.push(s);}
+  let order=word.split('').map((ch,i)=>({ch,i})).sort(()=>Math.random()-.5);
+  if(order.map(o=>o.ch).join('')===word)order.reverse();
+  const paint=()=>{
+    slotEls.forEach((s,i)=>{s.textContent=placed[i]?placed[i].ch:'';s.classList.toggle('full',!!placed[i]);});
+    tileEls.forEach(t=>t.el.classList.toggle('used',placed.includes(t.o)));
+  };
+  const clear=()=>{placed.length=0;paint();};
+  order.forEach(o=>{
+    const t=document.createElement('button');t.className='b-tile';t.textContent=o.ch;t.setAttribute('aria-label','Letter '+o.ch);
+    t.onclick=()=>{
+      if(quizSolved||placed.includes(o)||placed.length>=word.length)return;
+      placed.push(o);paint();
+      if(placed.length===word.length){
+        if(placed.map(x=>x.ch).join('')===word){slotEls.forEach(s=>s.classList.add('ok'));quizSolve('You built “'+word+'”!');}
+        else{showFeedback('fb-quiz','gentle','Almost! The letters go back so you can try again.');setTimeout(()=>{if(!quizSolved)clear();},900);}
+      }
+    };
+    tiles.appendChild(t);tileEls.push({el:t,o});
+  });
+  const undo=document.createElement('button');undo.className='mode-btn build-undo';undo.textContent='Start over';
+  undo.onclick=()=>{if(!quizSolved){clear();showFeedback('fb-quiz','','');}};
+  box.appendChild(pic);box.appendChild(slots);box.appendChild(tiles);box.appendChild(undo);
+}
+function hearQuestion(){
+  const q=quizItems[quizIdx];if(!q)return;
+  let t=q.q.replace(/[“”]/g,'');
+  if(q.sentence)t+=' '+q.sentence.replace('_____','blank');
+  if(q.type==='build')t+=' '+q.word+'.';
+  else if(!q.picOnly)t+=' '+quizOrder.map(x=>optText(x.o)).join('. ')+'.';
+  speakText(t,state.settings.slowMode?0.68:0.9,1.05);
+}
+function quizNext(){
+  if(!quizSolved)return;
+  if(quizIdx<quizItems.length-1){quizIdx++;renderQuiz();}
+  else goStep(lessonSteps().length-1);
+}
+
+// ── MASCOT, BADGES, REWARDS ────────────────────────────────────
+// Pip is the reading buddy. Badges reward taking part and practising, never speed or scores.
+const PIP_SVG='<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M26 15c2-6 10-6 12 0-3-2-9-2-12 0z" fill="#12805C"/><ellipse cx="32" cy="37" rx="22" ry="21" fill="#2FB886"/><path d="M11 39c-5 2-6 9-2 12 4-1 7-5 7-9z" fill="#12805C"/><path d="M53 39c5 2 6 9 2 12-4-1-7-5-7-9z" fill="#12805C"/><ellipse cx="32" cy="44" rx="13" ry="11.5" fill="#E3F7EE"/><circle cx="24" cy="30" r="6.5" fill="#fff"/><circle cx="40" cy="30" r="6.5" fill="#fff"/><circle cx="25" cy="31" r="2.8" fill="#1E2733"/><circle cx="39" cy="31" r="2.8" fill="#1E2733"/><path d="M28 37l4 5 4-5z" fill="#F4B52E"/></svg>';
+const MEDAL_SVG='<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M15 3h18l-4.5 15h-9z" fill="var(--tone-200)"/><circle cx="24" cy="29" r="15" fill="var(--tone-500)"/><circle cx="24" cy="29" r="10.5" fill="var(--tone-50)"/><path d="M24 21.5l2.2 4.5 5 .7-3.6 3.5.9 4.9-4.5-2.3-4.5 2.3.9-4.9-3.6-3.5 5-.7z" fill="var(--tone-700)"/></svg>';
+const BADGES=[
+  {id:'first',  name:'First steps',   need:'Finish 1 lesson or story',        tone:'mint', test:s=>s.done>=1},
+  {id:'five',   name:'High five',     need:'Finish 5 lessons or stories',     tone:'sky',  test:s=>s.done>=5},
+  {id:'fifteen',name:'Reading star',  need:'Finish 15 lessons or stories',    tone:'sun',  test:s=>s.done>=15},
+  {id:'story1', name:'Story starter', need:'Finish 1 story',                  tone:'coral',test:s=>s.stories>=1},
+  {id:'story5', name:'Story lover',   need:'Finish 5 stories',                tone:'lav',  test:s=>s.stories>=5},
+  {id:'aloud',  name:'Brave voice',   need:'Read 1 story out loud',           tone:'mint', test:s=>s.aloud>=1},
+  {id:'words',  name:'Word explorer', need:'Practice 20 words',               tone:'sky',  test:s=>s.words>=20},
+  {id:'review', name:'Practice hero', need:'Practice 5 Review words',         tone:'sun',  test:s=>s.review>=5},
+  {id:'grade',  name:'Grade champion',need:'Finish everything in one grade',  tone:'coral',test:s=>s.gradeDone},
+];
+function rewardStats(){
+  const done=new Set(state.lessonsCompleted),storyIds=new Set(allStories.map(s=>s.id));
+  let stories=0;done.forEach(id=>{if(storyIds.has(id))stories++;});
+  const gradeDone=Object.keys(GRADE_META).some(g=>{
+    const ids=GRADE_META[g].ids.concat(STORIES.filter(s=>s.grade===g).map(s=>s.id));
+    return ids.length>0&&ids.every(id=>done.has(id));
+  });
+  return {done:done.size,stories,aloud:state.readAloud||0,words:state.wordsPracticed.length,review:state.reviewCleared||0,gradeDone};
+}
+let toastTimer=null,lastNewBadge=null;
+function showToast(text){
+  const t=document.getElementById('toast');
+  document.getElementById('toastText').textContent=text;
+  t.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('on'),4200);
+}
+function checkBadges(announce){
+  state.badges=state.badges||[];
+  const s=rewardStats();let fresh=null;
+  BADGES.forEach(b=>{if(!state.badges.includes(b.id)&&b.test(s)){state.badges.push(b.id);fresh=b;}});
+  if(fresh){save();lastNewBadge=fresh;if(announce)showToast('New badge: '+fresh.name+'!');}
+}
+function renderRewards(){
+  const s=rewardStats(),have=new Set(state.badges||[]);
+  const next=BADGES.find(b=>!have.has(b.id));
+  document.getElementById('rwSub').textContent=next?('Next badge: '+next.name+'. '+next.need+'.'):'You have every badge. You are a word explorer!';
+  const st=document.getElementById('rwStats');st.innerHTML='';
+  [['sun',state.stars,'stars'],['mint',s.done,'lessons and stories'],['sky',s.words,'words practiced']].forEach(x=>{
+    const d=document.createElement('div');d.className='rw-stat tone-'+x[0];
+    d.innerHTML='<div class="rw-num">'+x[1]+'</div><div class="rw-lbl">'+x[2]+'</div>';st.appendChild(d);
+  });
+  document.getElementById('rwCount').textContent=have.size+' of '+BADGES.length;
+  const g=document.getElementById('badgeGrid');g.innerHTML='';
+  BADGES.forEach(b=>{
+    const on=have.has(b.id),d=document.createElement('div');
+    d.className='badge tone-'+b.tone+(on?' earned':' locked');
+    d.innerHTML=MEDAL_SVG+'<div class="badge-name">'+b.name+'</div><div class="badge-need">'+(on?'Earned!':b.need)+'</div>';
+    g.appendChild(d);
+  });
+}
+
+// ── CONFETTI ───────────────────────────────────────────────────
+let confettiId=0;
+function stopConfetti(){confettiId++;document.getElementById('confetti').style.display='none';}
+function launchConfetti(){
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const cv=document.getElementById('confetti'),ctx=cv.getContext('2d');
+  const dpr=window.devicePixelRatio||1,W=window.innerWidth,H=window.innerHeight;
+  cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+  cv.style.display='block';
+  const colors=['#5DCAA5','#AFA9EC','#FAC775','#ED93B1','#85B7EB','#F0997B'];
+  const parts=[];
+  for(let i=0;i<150;i++)parts.push({
+    x:Math.random()*W,y:-20-Math.random()*H*0.6,
+    w:6+Math.random()*6,h:8+Math.random()*8,
+    vx:-1.5+Math.random()*3,vy:2+Math.random()*3,
+    rot:Math.random()*6.28,vr:-0.15+Math.random()*0.3,
+    c:colors[i%colors.length]});
+  const id=++confettiId,t0=performance.now(),DUR=4200;
+  const frame=(t)=>{
+    const el=t-t0;
+    ctx.clearRect(0,0,W,H);
+    if(id!==confettiId)return;
+    if(el>=DUR){cv.style.display='none';return;}
+    ctx.globalAlpha=el>DUR-800?Math.max(0,(DUR-el)/800):1;
+    parts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;p.vy+=0.03;p.rot+=p.vr;
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);
+      ctx.fillStyle=p.c;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();
+    });
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+}
+
+function setupMatch(){
+  const l=currentLesson;
+  document.getElementById('matchPrompt').textContent='Tap the picture that shows: '+l.word;
+  const grid=document.getElementById('matchGrid');grid.innerHTML='';
+  matchDone=false;
+  document.getElementById('matchNext').style.opacity='.4';document.getElementById('matchNext').style.pointerEvents='none';
+  const pics=(l.pics||[{e:'📝',l:l.word,ok:true},{e:'📖',l:'book'},{e:'✏️',l:'pencil'}]).slice().sort(()=>Math.random()-.5);
+  pics.forEach(p=>{
+    const card=document.createElement('div');card.className='match-card';
+    card.innerHTML='<div class="match-emoji">'+p.e+'</div><div class="match-label">'+p.l+'</div>';
+    card.onclick=()=>{
+      if(matchDone)return;
+      if(p.ok){
+        card.classList.add('correct');
+        showFeedback('fb-match','good','You matched it! Well done.');
+        matchDone=true;
+        document.getElementById('matchNext').style.opacity='1';document.getElementById('matchNext').style.pointerEvents='auto';
+      } else {
+        showFeedback('fb-match','gentle','Have another look — tap the right picture.');
+      }
+    };
+    grid.appendChild(card);
+  });
+}
+
+function finishLesson(){
+  const l=currentLesson;
+  const first=!state.lessonsCompleted.includes(l.id);
+  if(first){state.lessonsCompleted.push(l.id);state.stars+=2;save();}
+  lastNewBadge=null;checkBadges(false);
+  document.getElementById('starBadge').textContent=state.stars;
+  const cheers=['You did it!','Great job!','Wonderful reading!','You are becoming a word explorer!'];
+  document.getElementById('encTitle').textContent=cheers[state.lessonsCompleted.length%cheers.length];
+  document.getElementById('encStars').textContent=first?'+2 stars earned':'You practiced it again. Nice work!';
+  const nb=document.getElementById('encBadge');
+  nb.style.display=lastNewBadge?'table':'none';
+  nb.textContent=lastNewBadge?'New badge: '+lastNewBadge.name+'!':'';
+  document.querySelector('#step-done .btn-next').textContent=l.isStory?'Back to stories':'Choose another lesson';
+  document.getElementById('dStars').textContent=state.stars;
+}
+
+function showFeedback(id,type,msg){
+  const el=document.getElementById(id);if(!el)return;
+  el.className='feedback';if(type&&msg){el.classList.add('show',type);el.textContent=msg;}
+}
+
+const breathPhases=[{cls:'inhale',dur:3200},{cls:'',dur:1500},{cls:'exhale',dur:4000},{cls:'',dur:1000}];
+function startBreath(){breathActive=true;breathPhaseIdx=0;runBreath();}
+function stopBreath(){breathActive=false;clearTimeout(breathTimer);const r=document.getElementById('breathRing');if(r)r.className='breath-ring';}
+function runBreath(){if(!breathActive)return;const p=breathPhases[breathPhaseIdx%breathPhases.length];const r=document.getElementById('breathRing');if(r)r.className='breath-ring '+(p.cls||'');breathPhaseIdx++;breathTimer=setTimeout(runBreath,p.dur);}
+function toggleBreath(){if(breathActive){stopBreath();document.getElementById('breathToggle').textContent='Breathing guide';}else{startBreath();document.getElementById('breathToggle').textContent='Stop guide';}}
+
+function buildWordCatTabs(){
+  const bar=document.getElementById('wordCatTabs');bar.innerHTML='';
+  Object.keys(WORD_CATS).forEach(cat=>{const btn=document.createElement('button');btn.className='cat-btn'+(cat===wordCat?' active':'');btn.textContent=cat;btn.onclick=()=>{wordCat=cat;buildWordGrid();buildWordCatTabs();};bar.appendChild(btn);});
+}
+function buildWordGrid(){
+  const g=document.getElementById('wordGrid');g.innerHTML='';
+  const practiced=new Set(state.wordsPracticed);
+  WORD_CATS[wordCat].forEach(w=>{
+    const card=document.createElement('div');
+    card.className='word-card';
+    card.style.borderColor=practiced.has(w)?'var(--teal100)':'';
+    card.textContent=w;
+    if(practiced.has(w)){const dot=document.createElement('div');dot.style.cssText='width:8px;height:8px;border-radius:50%;background:var(--teal100);position:absolute;top:5px;right:6px;';card.appendChild(dot);}
+    card.onclick=()=>{
+      speechSynthesis.cancel();
+      const utt=new SpeechSynthesisUtterance(w);
+      utt.rate=state.settings.slowMode?0.58:0.82;utt.pitch=1.08;
+      if(chosenVoice)utt.voice=chosenVoice;
+      card.classList.add('speaking');utt.onend=()=>card.classList.remove('speaking');
+      speechSynthesis.speak(utt);
+      if(!practiced.has(w)){state.wordsPracticed.push(w);save();buildWordGrid();checkBadges(true);}
+    };
+    g.appendChild(card);
+  });
+}
+
+function refreshDash(){
+  document.getElementById('dLessons').textContent=state.lessonsCompleted.length;
+  document.getElementById('dWords').textContent=state.wordsPracticed.length;
+  document.getElementById('dStars').textContent=state.stars;
+  const sounds=state.soundsHeard;const all=Object.entries(sounds).sort((a,b)=>b[1]-a[1]);const max=all[0]?all[0][1]:1;
+  const table=document.getElementById('soundTable');table.innerHTML='';
+  if(!all.length){table.innerHTML='<div class="st-row"><span style="font-size:13px;color:var(--t2);font-weight:600;">No sounds practiced yet</span></div>';}
+  all.slice(0,8).forEach(([s,n])=>{const row=document.createElement('div');row.className='st-row';row.innerHTML='<div style="width:32px;font-size:16px;font-weight:800;font-family:Lexend,sans-serif;color:var(--t1);">/'+s+'/</div><div class="st-bar-wrap"><div class="st-bar" style="width:'+Math.round((n/max)*100)+'%"></div></div><div style="font-size:12px;font-weight:700;color:var(--t2);min-width:60px;text-align:right;">'+n+' time'+(n>1?'s':'')+'</div>';table.appendChild(row);});
+  const pref=state.prefMode;const pr=document.getElementById('prefRow');pr.innerHTML='';
+  [{k:'speak',l:'Speaking'},{k:'listen',l:'Listening'},{k:'watch',l:'Watching'}].forEach(m=>{const d=document.createElement('div');d.style.cssText='flex:1;min-width:90px;border-radius:var(--radius-md);padding:10px;background:var(--bg2);text-align:center;border:0.5px solid var(--b3);';d.innerHTML='<div style="font-size:18px;font-weight:800;color:var(--t1);">'+(pref[m.k]||0)+'</div><div style="font-size:11px;font-weight:700;color:var(--t2);margin-top:2px;">'+m.l+'</div>';pr.appendChild(d);});
+  const sc=document.getElementById('settingsCard');sc.innerHTML='';
+  SETTINGS_DEF.forEach(s=>{const val=state.settings[s.key];const row=document.createElement('div');row.className='settings-row';row.innerHTML='<div><div style="font-size:14px;font-weight:700;color:var(--t1);">'+s.label+'</div><div style="font-size:12px;color:var(--t2);margin-top:2px;">'+s.sub+'</div></div><div class="toggle'+(val?' on':'')+'\" onclick="toggleSetting(\''+s.key+'\',this)"><div class="toggle-knob"></div></div>';sc.appendChild(row);});
+}
+function toggleSetting(key,el){state.settings[key]=!state.settings[key];save();el.classList.toggle('on',state.settings[key]);}
+function toggleCustom(){document.getElementById('customStory').classList.toggle('open');}
+function addCustomLesson(){
+  const title=document.getElementById('customTitle').value.trim();const text=document.getElementById('customText').value.trim();if(!title)return;
+  const parts=text.split(',').map(s=>s.trim()).filter(Boolean);
+  const isLetters=parts.length>=2&&parts.every(x=>x.length<=3&&!/\s/.test(x));
+  const sounds=isLetters?parts.map(x=>x.toLowerCase()):[];
+  const isStory=!isLetters&&text.length>10;const id='custom_'+Date.now();
+  if(isStory){allStories.push({id,word:title,sounds:[],theme:'custom',emoji:'📖',isStory:true,text});}
+  else if(sounds.length){lessons.push({id,word:title,sounds,theme:'custom',emoji:'📝',pics:[{e:'📝',l:title,ok:true},{e:'📖',l:'book'},{e:'✏️',l:'pencil'}]});}
+  else return;
+  document.getElementById('customTitle').value='';document.getElementById('customText').value='';document.getElementById('customStory').classList.remove('open');
+  buildLessonGrid();
+}
+
+document.querySelectorAll('.pip').forEach(e=>{e.innerHTML=PIP_SVG;});paintMotionBtn();checkBadges(false);
+buildGradeTabs();buildLessonGrid();buildWordCatTabs();buildWordGrid();updateReviewBadge();document.getElementById('starBadge').textContent=state.stars;applyFont();
+</script>
+</body>
+</html>
